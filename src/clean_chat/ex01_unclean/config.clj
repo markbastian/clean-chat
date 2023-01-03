@@ -8,7 +8,7 @@
     [parts.ring.adapter.jetty9.core :as jetty9]
     [parts.ws-handler :as ws]
     [clean-chat.system :as system]
-    [clean-chat.ex01-unclean.routes :as routes]))
+    [clean-chat.ex01-unclean.ws-handlers :as ws-handlers]))
 
 (def chat-schema
   {:username  {:db/unique :db.unique/identity}
@@ -19,10 +19,10 @@
 
 (def config
   {::ds/conn        {:schema chat-schema}
-   ::ws/ws-handlers {:on-connect #'routes/on-connect
-                     :on-text    #'routes/on-text
-                     :on-close   #'routes/on-close
-                     :on-error   #'routes/on-error}
+   ::ws/ws-handlers {:on-connect #'ws-handlers/on-connect
+                     :on-text    #'ws-handlers/on-text
+                     :on-close   #'ws-handlers/on-close
+                     :on-error   #'ws-handlers/on-error}
    ::jetty9/server  {:host             "0.0.0.0"
                      :port             3000
                      :join?            false

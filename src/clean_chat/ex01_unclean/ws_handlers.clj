@@ -1,11 +1,8 @@
-(ns clean-chat.ex01-unclean.routes
+(ns clean-chat.ex01-unclean.ws-handlers
   (:require [clean-chat.ex01-unclean.domain :as domain]
-            [clean-chat.pages :as chat-pages]
             [clean-chat.utils :as u]
             [clojure.tools.logging :as log]
-            [datascript.core :as d]
-            [ring.adapter.jetty9 :as jetty]
-            [hiccup.page :refer [html5]]))
+            [datascript.core :as d]))
 
 (defn on-connect [{:keys [path-params conn] :as context} ws]
   (let [{:keys [username room-name]} path-params]
@@ -13,11 +10,7 @@
       (domain/join-room! context {:username  username
                                   :room-name room-name
                                   :ws        ws})
-      (do
-        (jetty/send!
-          ws
-          (html5 (chat-pages/show-chat-login {:hx-swap-oob "true"})))
-        (jetty/close! ws)))))
+      (domain/notify-and-close-login-failure ws))))
 
 (defn on-text [{:keys [path-params conn] :as context} _ws text-message]
   (let [{:keys [username]} path-params

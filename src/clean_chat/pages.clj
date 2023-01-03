@@ -22,7 +22,7 @@
   [:div (into {:id "app"} attributes)
    [:form.container
     [:div.form-group
-     [:h4.text-center "Welcome to Markchat!"]
+     [:h4.text-center "Welcome to Chat!"]
      ;; Can probably inline an error band here and then oob swap it in
      ;; just need to not show the band if no error
      [:input.form-control

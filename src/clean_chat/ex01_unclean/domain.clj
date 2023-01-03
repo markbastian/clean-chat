@@ -61,13 +61,17 @@
 (defn current-room-name [db username]
   (some-> db (d/entity [:username username]) :room :room-name))
 
-(defn update-chat-prompt [db username]
+(defn notify-and-close-login-failure [ws]
+  (jetty/send! ws (html5 (chat-pages/show-chat-login {:hx-swap-oob "true"})))
+  (jetty/close! ws))
+
+(defn notify-update-chat-prompt [db username]
   (let [{:keys [ws room-name]} (ws+room-name db username)
         html (chat-pages/chat-prompt room-name {:autofocus   "true"
                                                 :hx-swap-oob "true"})]
     (jetty/send! ws (html5 html))))
 
-(defn update-room-change-link [db username]
+(defn notify-update-room-change-link [db username]
   (let [{:keys [ws room-name]} (ws+room-name db username)
         html (chat-pages/room-change-link room-name {:hx-swap-oob "true"})]
     (jetty/send! ws (html5 html))))
@@ -97,19 +101,21 @@
 (defn broadcast-enter-room [db username new-room-name]
   (let [message (format "%s joined %s" username new-room-name)]
     (broadcast-to-room db new-room-name message))
-  (update-chat-prompt db username)
-  (update-room-change-link db username))
+  (notify-update-chat-prompt db username)
+  (notify-update-room-change-link db username))
 
 (defn broadcast-leave-room [db username old-room-name]
   (let [message (format "%s left %s" username old-room-name)]
     (broadcast-to-room db old-room-name message)))
 
+;; Note that in this situation messages are ephemeral -- we are only tracking
+;; the room and user states.
 (defn broadcast-chat-message [db username message]
   (let [message (format "%s: %s" username message)
         room-name (current-room-name db username)]
     (log/infof "Broadcasting message '%s' from '%s' to '%s'." message username room-name)
     (broadcast-to-room db room-name message))
-  (update-chat-prompt db username))
+  (notify-update-chat-prompt db username))
 
 (defn join-room! [{:keys [conn]} {:keys [username room-name] :as entity}]
   (let [old-room-name (current-room-name @conn username)
@@ -118,7 +124,9 @@
       (let [tx-data [(-> entity
                          (dissoc :room-name)
                          (assoc :room {:room-name room-name}))]
+            ;; Write/mutate operation
             {:keys [db-after]} (d/transact! conn tx-data)]
+        ;; These statements contain two concerns: effects & notifications
         (when old-room-name
           (broadcast-leave-room db-after username old-room-name))
         (broadcast-enter-room db-after username room-name)
@@ -129,7 +137,9 @@
 (defn leave-chat! [{:keys [conn]} username]
   (let [tx-data [[:db.fn/retractAttribute [:username username] :ws]
                  [:db.fn/retractAttribute [:username username] :room]]
+        ;; Write/mutate operation
         {:keys [db-before db-after]} (d/transact! conn tx-data)
         old-room-name (current-room-name db-before username)]
+    ;; These statements contain two concerns: effects & notifications
     (broadcast-leave-room db-after username old-room-name)
     (broadcast-update-active-user-list db-after)))
