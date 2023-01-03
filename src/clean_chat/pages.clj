@@ -92,6 +92,27 @@
 (defn sidebar-sublist [& r]
   (into [:ul.btn-toggle-nav.list-unstyled.fw-normal.pb-1.small] r))
 
+(defn sidebar-room-names [room-names]
+  (sidebar-sublist
+    {:id "roomList"}
+    (map
+      (fn [room-name]
+        (sidebar-sublist-item
+          room-name
+          {:ws-send "true"
+           :name    "change-room"
+           :method  :post
+           :hx-vals (u/to-json-str {:room-name room-name})}))
+      room-names)))
+
+(defn sidebar-usernames [usernames]
+  (sidebar-sublist
+    {:id "userList"}
+    (map
+      (fn [username]
+        (sidebar-sublist-item username {}))
+      usernames)))
+
 (defn sidebar-list [list-name id]
   (let [collapse-id (format "%s-collapse" id)]
     [:li.mb-1

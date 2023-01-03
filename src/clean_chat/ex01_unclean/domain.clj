@@ -3,7 +3,6 @@
     [clean-chat.pages :as chat-pages]
     [clojure.tools.logging :as log]
     [datascript.core :as d]
-    [clean-chat.utils :as u]
     [hiccup.page :refer [html5]]
     [ring.adapter.jetty9 :as jetty]))
 
@@ -23,21 +22,10 @@
     [?r :room-name ?room-name]])
 
 (defn occupied-rooms [db]
-  (->> (d/q all-rooms-query db)
-       sort
-       (map (fn [room-name]
-              (chat-pages/sidebar-sublist-item
-                room-name
-                {:ws-send "true"
-                 :name    "change-room"
-                 :method  :post
-                 :hx-vals (u/to-json-str {:room-name room-name})})))))
+  (sort (d/q all-rooms-query db)))
 
 (defn all-active-users [db]
-  (->> (d/q all-active-users-query db)
-       (map :username)
-       sort
-       (map chat-pages/sidebar-sublist-item)))
+  (->> (d/q all-active-users-query db) (map :username) sort))
 
 (def all-ws-query
   '[:find [?ws ...] :in $ :where [?e :ws ?ws]])
@@ -77,16 +65,16 @@
     (jetty/send! ws (html5 html))))
 
 (defn broadcast-update-room-list [db]
-  (let [html (chat-pages/sidebar-sublist {:id "roomList"} (occupied-rooms db))
-        room-list-html (html5 html)]
+  (let [data (occupied-rooms db)
+        html (html5 (chat-pages/sidebar-room-names data))]
     (doseq [client (d/q all-ws-query db)]
-      (jetty/send! client room-list-html))))
+      (jetty/send! client html))))
 
 (defn broadcast-update-active-user-list [db]
-  (let [html (chat-pages/sidebar-sublist {:id "userList"} (all-active-users db))
-        user-list-html (html5 html)]
+  (let [data (all-active-users db)
+        html (html5 (chat-pages/sidebar-usernames data))]
     (doseq [client (d/q all-ws-query db)]
-      (jetty/send! client user-list-html))))
+      (jetty/send! client html))))
 
 (defn broadcast-to-room [db room-name message]
   (let [html (chat-pages/notifications-pane
@@ -127,12 +115,12 @@
             ;; Write/mutate operation
             {:keys [db-after]} (d/transact! conn tx-data)]
         ;; These statements contain two concerns: effects & notifications
-        (when old-room-name
-          (broadcast-leave-room db-after username old-room-name))
-        (broadcast-enter-room db-after username room-name)
+        (if old-room-name
+          (broadcast-leave-room db-after username old-room-name)
+          (broadcast-update-active-user-list db-after))
         (when room-will-be-created?
           (broadcast-update-room-list db-after))
-        (broadcast-update-active-user-list db-after)))))
+        (broadcast-enter-room db-after username room-name)))))
 
 (defn leave-chat! [{:keys [conn]} username]
   (let [tx-data [[:db.fn/retractAttribute [:username username] :ws]
@@ -143,3 +131,11 @@
     ;; These statements contain two concerns: effects & notifications
     (broadcast-leave-room db-after username old-room-name)
     (broadcast-update-active-user-list db-after)))
+
+;; Challenges:
+;; - Notifications are coupled to effects -- We can't independently handle effects if desired
+;; - Clients are baked into the context and are hardwired for a single type (ws)
+;; - Notifications are all tied to the final presentation (htmx)
+;; - No tests -- How would you test this?
+;; Pros:
+;; - This is actually really easy to read and follow
