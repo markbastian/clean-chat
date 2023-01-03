@@ -13,11 +13,14 @@
     :where
     [_ :room-name ?room-name]])
 
-(def all-users-query
-  '[:find [?username ...]
+(def all-active-users-query
+  '[:find ?username ?room-name
+    :keys username room-name
     :in $
     :where
-    [_ :username ?username]])
+    [?e :username ?username]
+    [?e :room ?r]
+    [?r :room-name ?room-name]])
 
 (defn occupied-rooms [db]
   (->> (d/q all-rooms-query db)
@@ -30,32 +33,42 @@
                  :method  :post
                  :hx-vals (u/to-json-str {:room-name room-name})})))))
 
-(defn all-users [db]
-  (->> (d/q all-users-query db)
+(defn all-active-users [db]
+  (->> (d/q all-active-users-query db)
+       (map :username)
        sort
        (map chat-pages/sidebar-sublist-item)))
 
 (def all-ws-query
   '[:find [?ws ...] :in $ :where [?e :ws ?ws]])
 
-(def room-name->ws-query
-  '[:find [?ws ...]
-    :in $ ?room-name
+(def username->ws+room-query
+  '[:find ?ws ?room-name
+    :keys ws room-name
+    :in $ ?username
     :where
+    [?e :username ?username]
     [?e :ws ?ws]
-    [?e :room-name ?room-name]])
+    [?e :room ?r]
+    [?r :room-name ?room-name]])
+
+(defn ws+room-name [db username]
+  (first
+    (d/q
+      username->ws+room-query
+      db username)))
 
 (defn current-room-name [db username]
-  (:room-name (d/entity db [:username username])))
+  (some-> db (d/entity [:username username]) :room :room-name))
 
 (defn update-chat-prompt [db username]
-  (let [{:keys [ws room-name]} (d/entity db [:username username])
+  (let [{:keys [ws room-name]} (ws+room-name db username)
         html (chat-pages/chat-prompt room-name {:autofocus   "true"
                                                 :hx-swap-oob "true"})]
     (jetty/send! ws (html5 html))))
 
 (defn update-room-change-link [db username]
-  (let [{:keys [ws room-name]} (d/entity db [:username username])
+  (let [{:keys [ws room-name]} (ws+room-name db username)
         html (chat-pages/room-change-link room-name {:hx-swap-oob "true"})]
     (jetty/send! ws (html5 html))))
 
@@ -65,17 +78,20 @@
     (doseq [client (d/q all-ws-query db)]
       (jetty/send! client room-list-html))))
 
-(defn broadcast-update-user-list [db]
-  (let [html (chat-pages/sidebar-sublist {:id "userList"} (all-users db))
-        room-list-html (html5 html)]
+(defn broadcast-update-active-user-list [db]
+  (let [html (chat-pages/sidebar-sublist {:id "userList"} (all-active-users db))
+        user-list-html (html5 html)]
     (doseq [client (d/q all-ws-query db)]
-      (jetty/send! client room-list-html))))
+      (jetty/send! client user-list-html))))
 
 (defn broadcast-to-room [db room-name message]
   (let [html (chat-pages/notifications-pane
                {:hx-swap-oob "beforeend"}
                [:div [:i message]])]
-    (doseq [client (d/q room-name->ws-query db room-name)]
+    (doseq [client (->> (d/entity db [:room-name room-name])
+                        :_room
+                        (map :ws)
+                        (filter identity))]
       (jetty/send! client (html5 html)))))
 
 (defn broadcast-enter-room [db username new-room-name]
@@ -90,24 +106,30 @@
 
 (defn broadcast-chat-message [db username message]
   (let [message (format "%s: %s" username message)
-        room-name (:room-name (d/entity db [:username username]))]
+        room-name (current-room-name db username)]
     (log/infof "Broadcasting message '%s' from '%s' to '%s'." message username room-name)
     (broadcast-to-room db room-name message))
   (update-chat-prompt db username))
 
 (defn join-room! [{:keys [conn]} {:keys [username room-name] :as entity}]
-  (let [old-room-name (current-room-name @conn username)]
+  (let [old-room-name (current-room-name @conn username)
+        room-will-be-created? (nil? (d/entity @conn [:room-name room-name]))]
     (when-not (= room-name old-room-name)
-      (let [{:keys [db-after]} (d/transact! conn [entity])]
-        (broadcast-leave-room db-after username old-room-name)
+      (let [tx-data [(-> entity
+                         (dissoc :room-name)
+                         (assoc :room {:room-name room-name}))]
+            {:keys [db-after]} (d/transact! conn tx-data)]
+        (when old-room-name
+          (broadcast-leave-room db-after username old-room-name))
         (broadcast-enter-room db-after username room-name)
-        (broadcast-update-room-list db-after)
-        (broadcast-update-user-list db-after)))))
+        (when room-will-be-created?
+          (broadcast-update-room-list db-after))
+        (broadcast-update-active-user-list db-after)))))
 
 (defn leave-chat! [{:keys [conn]} username]
-  (let [tx-data [[:db/retractEntity [:username username]]]
+  (let [tx-data [[:db.fn/retractAttribute [:username username] :ws]
+                 [:db.fn/retractAttribute [:username username] :room]]
         {:keys [db-before db-after]} (d/transact! conn tx-data)
         old-room-name (current-room-name db-before username)]
     (broadcast-leave-room db-after username old-room-name)
-    (broadcast-update-room-list db-after)
-    (broadcast-update-user-list db-after)))
+    (broadcast-update-active-user-list db-after)))

@@ -9,7 +9,7 @@
 
 (defn on-connect [{:keys [path-params conn] :as context} ws]
   (let [{:keys [username room-name]} path-params]
-    (if-not (d/entity @conn [:username username])
+    (if-not (:ws (d/entity @conn [:username username]))
       (domain/join-room! context {:username  username
                                   :room-name room-name
                                   :ws        ws})
