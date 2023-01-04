@@ -1,6 +1,7 @@
 (ns clean-chat.web
   (:require
     [clean-chat.pages :as chat-pages]
+    [clojure.pprint :as pp]
     [reitit.ring :as ring]
     [reitit.ring.middleware.muuntaja :as muuntaja]
     [reitit.ring.coercion :as coercion]
@@ -32,7 +33,8 @@
   ([request resp _raise]
    (resp (ws-handler request))))
 
-(defn landing-page-handler [_] (ok chat-pages/landing-page))
+(defn landing-page-handler [{:keys [title]}]
+  (ok (chat-pages/landing-page title)))
 
 (defn get-chatroom-page-handler [{:keys [params] :as request}]
   (let [{:keys [username room-name]

@@ -4,13 +4,13 @@
             [clojure.tools.logging :as log]
             [datascript.core :as d]))
 
-(defn on-connect [{:keys [path-params conn] :as context} ws]
+(defn on-connect [{:keys [title path-params conn] :as context} ws]
   (let [{:keys [username room-name]} path-params]
     (if-not (:ws (d/entity @conn [:username username]))
       (domain/join-room! context {:username  username
                                   :room-name room-name
                                   :ws        ws})
-      (domain/notify-and-close-login-failure ws))))
+      (domain/notify-and-close-login-failure title ws))))
 
 (defn on-text [{:keys [path-params conn] :as context} _ws text-message]
   (let [{:keys [username]} path-params
@@ -18,7 +18,7 @@
         command (keyword (get-in json [:HEADERS :HX-Trigger-Name]))]
     (log/infof "Dispatching command '%s'" command)
     (case command
-      :chat-message (domain/broadcast-chat-message @conn username chat-message)
+      :chat-message (domain/create-chat-message! context username chat-message)
       :change-room (domain/join-room! context {:username  username
                                                :room-name room-name})
       (log/warnf "Unhandled command '%s'" command))))

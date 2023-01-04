@@ -18,11 +18,11 @@
     [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
     content))
 
-(defn show-chat-login [& attributes]
+(defn show-chat-login [title & attributes]
   [:div (into {:id "app"} attributes)
    [:form.container
     [:div.form-group
-     [:h4.text-center "Welcome to Chat!"]
+     [:h4.text-center title]
      ;; Can probably inline an error band here and then oob swap it in
      ;; just need to not show the band if no error
      [:input.form-control
@@ -37,8 +37,8 @@
        :hx-vals   (u/to-json-str {:room-name "public"})}
       "Join"]]]])
 
-(def landing-page
-  (wrap-as-page (show-chat-login)))
+(defn landing-page [title]
+  (wrap-as-page (show-chat-login title)))
 
 (def room-create-modal
   [:div#changeRoomModal.modal.fade
@@ -66,6 +66,14 @@
         {:type            "button"
          :data-bs-dismiss "modal"}
         "Close"]
+       ;; TODO - Comment out and restore as needed
+       [:button.btn.btn-primary
+        {:type            "button"
+         :data-bs-dismiss "modal"
+         :ws-send         "true"
+         :name            "rename-room"
+         :method          :post}
+        "Rename"]
        [:button.btn.btn-primary
         {:type            "button"
          :data-bs-dismiss "modal"

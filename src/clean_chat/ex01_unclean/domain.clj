@@ -1,6 +1,7 @@
 (ns clean-chat.ex01-unclean.domain
   (:require
     [clean-chat.pages :as chat-pages]
+    [clojure.pprint :as pp]
     [clojure.tools.logging :as log]
     [datascript.core :as d]
     [hiccup.page :refer [html5]]
@@ -49,8 +50,8 @@
 (defn current-room-name [db username]
   (some-> db (d/entity [:username username]) :room :room-name))
 
-(defn notify-and-close-login-failure [ws]
-  (jetty/send! ws (html5 (chat-pages/show-chat-login {:hx-swap-oob "true"})))
+(defn notify-and-close-login-failure [title ws]
+  (jetty/send! ws (html5 (chat-pages/show-chat-login title {:hx-swap-oob "true"})))
   (jetty/close! ws))
 
 (defn notify-update-chat-prompt [db username]
@@ -67,6 +68,7 @@
 (defn broadcast-update-room-list [db]
   (let [data (occupied-rooms db)
         html (html5 (chat-pages/sidebar-room-names data))]
+    (pp/pprint {:data data :html html})
     (doseq [client (d/q all-ws-query db)]
       (jetty/send! client html))))
 
@@ -98,12 +100,12 @@
 
 ;; Note that in this situation messages are ephemeral -- we are only tracking
 ;; the room and user states.
-(defn broadcast-chat-message [db username message]
+(defn create-chat-message! [{:keys [conn]} username message]
   (let [message (format "%s: %s" username message)
-        room-name (current-room-name db username)]
+        room-name (current-room-name @conn username)]
     (log/infof "Broadcasting message '%s' from '%s' to '%s'." message username room-name)
-    (broadcast-to-room db room-name message))
-  (notify-update-chat-prompt db username))
+    (broadcast-to-room @conn room-name message))
+  (notify-update-chat-prompt @conn username))
 
 (defn join-room! [{:keys [conn]} {:keys [username room-name] :as entity}]
   (let [old-room-name (current-room-name @conn username)
@@ -118,19 +120,20 @@
         (if old-room-name
           (broadcast-leave-room db-after username old-room-name)
           (broadcast-update-active-user-list db-after))
-        (when room-will-be-created?
+        (when (or room-will-be-created? (nil? old-room-name))
           (broadcast-update-room-list db-after))
         (broadcast-enter-room db-after username room-name)))))
 
 (defn leave-chat! [{:keys [conn]} username]
-  (let [tx-data [[:db.fn/retractAttribute [:username username] :ws]
-                 [:db.fn/retractAttribute [:username username] :room]]
-        ;; Write/mutate operation
-        {:keys [db-before db-after]} (d/transact! conn tx-data)
-        old-room-name (current-room-name db-before username)]
-    ;; These statements contain two concerns: effects & notifications
-    (broadcast-leave-room db-after username old-room-name)
-    (broadcast-update-active-user-list db-after)))
+  (when (:room (d/entity @conn [:username username]))
+    (let [tx-data [[:db.fn/retractAttribute [:username username] :ws]
+                   [:db.fn/retractAttribute [:username username] :room]]
+          ;; Write/mutate operation
+          {:keys [db-before db-after]} (d/transact! conn tx-data)
+          old-room-name (current-room-name db-before username)]
+      ;; These statements contain two concerns: effects & notifications
+      (broadcast-leave-room db-after username old-room-name)
+      (broadcast-update-active-user-list db-after))))
 
 ;; Challenges:
 ;; - Notifications are coupled to effects -- We can't independently handle effects if desired
@@ -139,3 +142,14 @@
 ;; - No tests -- How would you test this?
 ;; Pros:
 ;; - This is actually really easy to read and follow
+;;
+;; Should I even refactor this?
+;; What's the business or personal value?
+;; What do I want to do?
+;; - Add new client types?
+;; - Add new commands?
+;; - Add new response types?
+;; - Persist my data?
+;; - Add some sort of testing?
+;;
+;; If I don't know what I want to do then I should build something else.

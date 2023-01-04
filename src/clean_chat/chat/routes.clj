@@ -12,7 +12,7 @@
     [clean-chat.ws-handlers :as ws-handlers]
     [hiccup.page :refer [html5]]))
 
-(defn on-connect [{:keys [clients path-params] :as context} ws]
+(defn on-connect [{:keys [title clients path-params] :as context} ws]
   (let [{:keys [username room-name]} path-params]
     (if (client-api/add-client! clients {:client-id username
                                          :transport :ws
@@ -25,7 +25,7 @@
       (do
         (jetty/send!
           ws
-          (html5 (chat-pages/show-chat-login {:hx-swap-oob "true"})))
+          (html5 (chat-pages/show-chat-login title {:hx-swap-oob "true"})))
         (jetty/close! ws)))))
 
 (defn on-text [{:keys [path-params] :as context} _ws text-message]
@@ -74,7 +74,8 @@
   ([request resp _raise]
    (resp (ws-handler request))))
 
-(defn landing-page-handler [_] (ok chat-pages/landing-page))
+(defn landing-page-handler [{:keys [title]}]
+  (ok (chat-pages/landing-page title)))
 
 (defn get-chatroom-page-handler [{:keys [params] :as request}]
   (let [{:keys [username room-name]

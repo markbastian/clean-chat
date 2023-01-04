@@ -1,6 +1,6 @@
-(ns clean-chat.ex01-unclean.config
+(ns clean-chat.ex02-cqrs.config
   (:require
-    [clean-chat.ex01-unclean.domain :as domain]
+    [clean-chat.ex02-cqrs.domain :as domain]
     [clean-chat.web :as web]
     [datascript.core :as d]
     [integrant.core :as ig]
@@ -8,11 +8,10 @@
     [parts.ring.adapter.jetty9.core :as jetty9]
     [parts.ws-handler :as ws]
     [clean-chat.system :as system]
-    [clean-chat.ex01-unclean.ws-handlers :as ws-handlers]))
+    [clean-chat.ex02-cqrs.ws-handlers :as ws-handlers]))
 
 (def chat-schema
   {:username  {:db/unique :db.unique/identity}
-   :ws        {:db/unique :db.unique/identity}
    :room-name {:db/unique :db.unique/identity}
    :room      {:db/valueType   :db.type/ref
                :db/cardinality :db.cardinality/one}})
@@ -23,7 +22,7 @@
                      :on-text    #'ws-handlers/on-text
                      :on-close   #'ws-handlers/on-close
                      :on-error   #'ws-handlers/on-error}
-   ::jetty9/server  {:title            "Welcome to Cowboy Chat!"
+   ::jetty9/server  {:title            "Welcome to CQRS Chat!"
                      :host             "0.0.0.0"
                      :port             3000
                      :join?            false
@@ -37,12 +36,15 @@
   (system/stop)
   (system/restart config)
 
-  (let [conn (::ds/conn (system/system))]
+  (let [conn (get (system/system) ::ds/conn)]
     @conn)
 
-  (require '[clean-chat.ex01-unclean.domain :as domain])
+  (let [conn (::ds/conn (system/system))
+        id (:db/id (d/entity @conn [:room-name "foo"]))]
+    (d/db-with @conn [[:db/add id :room-name "bar"]]))
+
+  (require '[clean-chat.ex02-cqrs.domain :as domain])
   (require '[datascript.core :as d])
   (let [conn (::ds/conn (system/system))]
     (d/q domain/all-active-users-query @conn))
-
   )
