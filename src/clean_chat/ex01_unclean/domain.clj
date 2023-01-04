@@ -1,7 +1,6 @@
 (ns clean-chat.ex01-unclean.domain
   (:require
     [clean-chat.pages :as chat-pages]
-    [clojure.pprint :as pp]
     [clojure.tools.logging :as log]
     [datascript.core :as d]
     [hiccup.page :refer [html5]]
@@ -68,7 +67,6 @@
 (defn broadcast-update-room-list [db]
   (let [data (occupied-rooms db)
         html (html5 (chat-pages/sidebar-room-names data))]
-    (pp/pprint {:data data :html html})
     (doseq [client (d/q all-ws-query db)]
       (jetty/send! client html))))
 

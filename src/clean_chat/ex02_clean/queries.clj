@@ -1,4 +1,4 @@
-(ns clean-chat.ex02-cqrs.queries
+(ns clean-chat.ex02-clean.queries
   (:require [datascript.core :as d]))
 
 (def all-rooms-query
@@ -56,9 +56,3 @@
 
 (defn current-room-name [db username]
   (some-> db (d/entity [:username username]) :room :room-name))
-
-(defn room [db room-name]
-  (d/entity db [:room-name room-name]))
-
-(defn room-exists? [db room-name]
-  (some? (d/entity db [:room-name room-name])))
