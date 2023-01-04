@@ -42,11 +42,33 @@
 
   (require '[clean-chat.ex02-cqrs.domain :as domain])
   (require '[clean-chat.ex02-cqrs.queries :as queries])
+  (require '[clean-chat.ex02-cqrs.commands :as commands])
   (require '[datascript.core :as d])
 
   (let [conn (::ds/conn (system/system))
         id (:db/id (d/entity @conn [:room-name "foo"]))]
     (d/db-with @conn [[:db/add id :room-name "bar"]]))
+
+  (let [conn (::ds/conn (system/system))]
+    (commands/dispatch-command
+      {:conn conn}
+      {:command   :change-room
+       :username  "Mark"
+       :room-name "froob"}))
+
+  (let [conn (::ds/conn (system/system))]
+    (commands/dispatch-command
+      {:conn conn}
+      {:command   :chat-message
+       :username  "Mark"
+       :chat-message "What's going on?"}))
+
+  (let [conn (::ds/conn (system/system))]
+    (commands/dispatch-command
+      {:conn conn}
+      {:command   :change-room
+       :username  "Mark"
+       :room-name "public"}))
 
   (let [conn (::ds/conn (system/system))]
     (queries/chat-history @conn "public"))

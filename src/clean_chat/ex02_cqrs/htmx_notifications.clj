@@ -1,7 +1,6 @@
 (ns clean-chat.ex02-cqrs.htmx-notifications
   (:require [clean-chat.pages :as chat-pages]
             [clean-chat.ex02-cqrs.queries :as queries]
-            [clojure.pprint :as pp]
             [ring.adapter.jetty9 :as jetty]
             [hiccup.page :refer [html5]]))
 
@@ -22,7 +21,6 @@
 
 (defn broadcast-update-room-list [db]
   (let [data (queries/occupied-rooms db)
-        _ (pp/pprint data)
         html (html5 (chat-pages/sidebar-room-names data))]
     (doseq [client (queries/all-clients db)]
       (jetty/send! client html))))
