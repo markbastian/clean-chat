@@ -1,6 +1,5 @@
 (ns clean-chat.ex02-cqrs.config
   (:require
-    [clean-chat.ex02-cqrs.domain :as domain]
     [clean-chat.web :as web]
     [datascript.core :as d]
     [integrant.core :as ig]
@@ -41,12 +40,18 @@
   (let [conn (get (system/system) ::ds/conn)]
     @conn)
 
+  (require '[clean-chat.ex02-cqrs.domain :as domain])
+  (require '[clean-chat.ex02-cqrs.queries :as queries])
+  (require '[datascript.core :as d])
+
   (let [conn (::ds/conn (system/system))
         id (:db/id (d/entity @conn [:room-name "foo"]))]
     (d/db-with @conn [[:db/add id :room-name "bar"]]))
 
-  (require '[clean-chat.ex02-cqrs.domain :as domain])
-  (require '[datascript.core :as d])
+  (let [conn (::ds/conn (system/system))]
+    (queries/chat-history @conn "public"))
+
+
   (let [conn (::ds/conn (system/system))]
     (d/q domain/all-active-users-query @conn))
   )
