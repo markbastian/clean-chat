@@ -35,3 +35,9 @@
 
   (let [conn (:parts.datascript.core.core/conn (system/system))]
     (queries/chat-history @conn "public")))
+
+;; I still got some issues
+;; - I really can't test this - I just have automation and separation
+;; - I need to separate out the client from the username
+;; - I need to separate events from notifications
+;; - Notifications should be generalizable
