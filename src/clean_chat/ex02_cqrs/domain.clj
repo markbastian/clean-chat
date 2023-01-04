@@ -6,14 +6,15 @@
     [clean-chat.ex02-cqrs.htmx-notifications :as htmx-notifications]))
 
 (defn create-chat-message! [{:keys [conn]} username message]
-  (let [formatted-message (format "%s: %s" username message)
-        room-name (queries/current-room-name @conn username)]
+  (let [room-name (queries/current-room-name @conn username)]
     (d/transact! conn [{:message                message
                         :nanos-since-unix-epoch (System/nanoTime)
                         :user                   {:username username}
                         :room                   {:room-name room-name}}])
-    (log/infof "Broadcasting message '%s' from '%s' to '%s'." message username room-name)
-    (htmx-notifications/broadcast-to-room @conn room-name formatted-message))
+    (log/infof
+      "Broadcasting message '%s' from '%s' to '%s'." message username room-name)
+    (htmx-notifications/broadcast-to-room
+      @conn room-name (format "%s: %s" username message)))
   (htmx-notifications/notify-update-chat-prompt @conn username))
 
 (defn join-room! [{:keys [conn]} {:keys [username room-name] :as entity}]
