@@ -1,6 +1,7 @@
 (ns clean-chat.ex02-cqrs.htmx-notifications
   (:require [clean-chat.pages :as chat-pages]
             [clean-chat.ex02-cqrs.queries :as queries]
+            [clojure.pprint :as pp]
             [ring.adapter.jetty9 :as jetty]
             [hiccup.page :refer [html5]]))
 
@@ -21,6 +22,7 @@
 
 (defn broadcast-update-room-list [db]
   (let [data (queries/occupied-rooms db)
+        _ (pp/pprint data)
         html (html5 (chat-pages/sidebar-room-names data))]
     (doseq [client (queries/all-clients db)]
       (jetty/send! client html))))
@@ -38,7 +40,21 @@
     (doseq [client (queries/clients-in-room db room-name)]
       (jetty/send! client (html5 html)))))
 
+(defn notify-reset-room [db username]
+  (let [{:keys [ws room-name]} (queries/ws+room-name db username)
+        chat-history (queries/chat-history db room-name)
+        divs (mapv
+               (fn [{:keys [username message]}]
+                 [:div [:i (format "%s: %s" username message)]])
+               chat-history)
+        html (apply
+               chat-pages/notifications-pane
+               {:hx-swap-oob "true"}
+               divs)]
+    (jetty/send! ws (html5 html))))
+
 (defn broadcast-enter-room [db username new-room-name]
+  (notify-reset-room db username)
   (let [message (format "%s joined %s" username new-room-name)]
     (broadcast-to-room db new-room-name message))
   (notify-update-chat-prompt db username)

@@ -1,5 +1,6 @@
 (ns clean-chat.ex02-cqrs.queries
-  (:require [datascript.core :as d]))
+  (:require
+    [datascript.core :as d]))
 
 (def all-rooms-query
   '[:find [?room-name ...]
@@ -62,3 +63,18 @@
 
 (defn room-exists? [db room-name]
   (some? (d/entity db [:room-name room-name])))
+
+(defn chat-history [db room-name]
+  (->> (d/q
+         '[:find ?username ?message ?t
+           :keys username message t
+           :in $ ?room-name
+           :where
+           [?r :room-name ?room-name]
+           [?m :room ?r]
+           [?m :user ?u]
+           [?u :username ?username]
+           [?m :message ?message]
+           [?m :nanos-since-unix-epoch ?t]]
+         db room-name)
+       (sort-by :t)))
