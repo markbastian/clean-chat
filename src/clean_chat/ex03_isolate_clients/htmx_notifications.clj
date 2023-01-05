@@ -1,7 +1,7 @@
-(ns clean-chat.ex03-cleaner.htmx-notifications
+(ns clean-chat.ex03-isolate-clients.htmx-notifications
   (:require [clean-chat.pages :as chat-pages]
-            [clean-chat.ex03-cleaner.client-api :as client-api]
-            [clean-chat.ex03-cleaner.queries :as queries]
+            [clean-chat.ex03-isolate-clients.client-api :as client-api]
+            [clean-chat.ex03-isolate-clients.queries :as queries]
             [hiccup.page :refer [html5]]))
 
 (defn notify-update-chat-prompt [client room-name]
@@ -14,7 +14,7 @@
                       room-name {:hx-swap-oob "true"}))]
     (client-api/send! client html)))
 
-(defn notify-foo [client room-name]
+(defn notify-update-room-names [client room-name]
   (notify-update-chat-prompt client room-name)
   (notify-update-room-change-link client room-name))
 
@@ -55,7 +55,7 @@
     (notify-reset-room clients db username)
     (let [message (format "%s joined %s" username new-room-name)]
       (broadcast-to-room clients db new-room-name message))
-    (notify-foo client new-room-name)))
+    (notify-update-room-names client new-room-name)))
 
 (defn broadcast-leave-room [clients db username old-room-name]
   (let [message (format "%s left %s" username old-room-name)]

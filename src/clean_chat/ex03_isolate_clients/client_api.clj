@@ -1,4 +1,4 @@
-(ns clean-chat.ex03-cleaner.client-api
+(ns clean-chat.ex03-isolate-clients.client-api
   (:require [clojure.tools.logging :as log]
             [datascript.core :as d]
             [ring.adapter.jetty9 :as jetty]))
@@ -21,7 +21,7 @@
 (defmulti send! (fn [{:keys [transport] :as _user} _message] transport))
 
 (defmethod send! :ws [{:keys [client-id ws]} message]
-  (log/infof "Sending to %s via ws." client-id)
+  (log/tracef "Sending %s to %s via ws." message client-id)
   (jetty/send! ws message))
 
 (defn broadcast! [db client-ids message]

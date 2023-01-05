@@ -1,4 +1,4 @@
-(ns clean-chat.ex03-cleaner.config
+(ns clean-chat.ex03-isolate-clients.config
   (:require
     [clean-chat.web :as web]
     [datascript.core :as d]
@@ -7,7 +7,7 @@
     [parts.ring.adapter.jetty9.core :as jetty9]
     [parts.ws-handler :as ws]
     [clean-chat.system :as system]
-    [clean-chat.ex03-cleaner.ws-handlers :as ws-handlers]))
+    [clean-chat.ex03-isolate-clients.ws-handlers :as ws-handlers]))
 
 (def chat-schema
   {:username  {:db/unique :db.unique/identity}
@@ -45,9 +45,9 @@
   (let [conn (get (system/system) ::ds/conn)]
     @conn)
 
-  (require '[clean-chat.ex03-cleaner.domain :as domain])
-  (require '[clean-chat.ex03-cleaner.queries :as queries])
-  (require '[clean-chat.ex03-cleaner.commands :as commands])
+  (require '[clean-chat.ex03-isolate-clients.domain :as domain])
+  (require '[clean-chat.ex03-isolate-clients.queries :as queries])
+  (require '[clean-chat.ex03-isolate-clients.commands :as commands])
   (require '[datascript.core :as d])
 
   (let [conn (::ds/conn (system/system))

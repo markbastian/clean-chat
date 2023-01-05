@@ -1,6 +1,6 @@
-(ns clean-chat.ex03-cleaner.ws-handlers
-  (:require [clean-chat.ex03-cleaner.client-api :as client-api]
-            [clean-chat.ex03-cleaner.commands :as commands]
+(ns clean-chat.ex03-isolate-clients.ws-handlers
+  (:require [clean-chat.ex03-isolate-clients.client-api :as client-api]
+            [clean-chat.ex03-isolate-clients.commands :as commands]
             [clean-chat.pages :as chat-pages]
             [clean-chat.utils :as u]
             [clojure.tools.logging :as log]

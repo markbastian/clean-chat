@@ -1,6 +1,6 @@
-(ns clean-chat.ex03-cleaner.commands
+(ns clean-chat.ex03-isolate-clients.commands
   (:require
-    [clean-chat.ex03-cleaner.domain :as domain]
+    [clean-chat.ex03-isolate-clients.domain :as domain]
     [clojure.pprint :as pp]
     [clojure.tools.logging :as log]))
 

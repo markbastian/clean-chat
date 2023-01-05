@@ -1,9 +1,9 @@
-(ns clean-chat.ex03-cleaner.domain
+(ns clean-chat.ex03-isolate-clients.domain
   (:require
-    [clean-chat.ex03-cleaner.client-api :as client-api]
-    [clean-chat.ex03-cleaner.queries :as queries]
+    [clean-chat.ex03-isolate-clients.client-api :as client-api]
+    [clean-chat.ex03-isolate-clients.queries :as queries]
     [datascript.core :as d]
-    [clean-chat.ex03-cleaner.htmx-notifications :as htmx-notifications]))
+    [clean-chat.ex03-isolate-clients.htmx-notifications :as htmx-notifications]))
 
 (defn create-chat-message! [{:keys [clients conn]} username message]
   ;;Business logic
@@ -60,7 +60,9 @@
             (format "Room name changed to %s" room-name))
           (doseq [username (queries/all-active-users @conn)
                   :let [client (client-api/get-client clients username)]]
-            (htmx-notifications/notify-foo client room-name)))))))
+            (htmx-notifications/notify-update-room-names client room-name)))))))
 
 ;; Refactorings
 ;; - Separate clients from state
+;; - Results in isolated, pure notifications
+;; - Makes it easier to identify what needs to change in business logic

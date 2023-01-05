@@ -1,4 +1,4 @@
-(ns clean-chat.ex03-cleaner.queries
+(ns clean-chat.ex03-isolate-clients.queries
   (:require
     [datascript.core :as d]))
 
