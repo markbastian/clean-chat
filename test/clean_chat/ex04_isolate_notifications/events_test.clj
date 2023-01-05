@@ -10,8 +10,20 @@
     [clean-chat.ex04-isolate-notifications.events :refer :all]
     [datascript.core :as d]))
 
-(deftest join-chat-test
-  (testing "Correct behavior when joining chat"
+(deftest join-chat-commands-test
+  (testing "Correct commands behavior when joining chat"
+    (let [events (commands/dispatch-command
+                   {:conn (d/create-conn config/chat-schema)}
+                   {:command   :join-chat
+                    :username  "Mark"
+                    :room-name "public"})]
+      (is (= [{:event :join-chat :username "Mark"}
+              {:event :create-room :room-name "public"}
+              {:event :enter-room :room-name "public" :username "Mark"}]
+             events)))))
+
+(deftest join-chat-broker-test
+  (testing "Correct broker behavior when joining chat"
     (let [clients (atom {})
           res (atom [])
           _ (client-api/add-client! clients {:client-id "Mark"
