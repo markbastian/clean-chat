@@ -1,6 +1,6 @@
-(ns clean-chat.ex03-isolate-clients.ws-handlers
-  (:require [clean-chat.ex03-isolate-clients.client-api :as client-api]
-            [clean-chat.ex03-isolate-clients.commands :as commands]
+(ns clean-chat.ex04-isolate-notifications.ws-handlers
+  (:require [clean-chat.ex04-isolate-notifications.client-api :as client-api]
+            [clean-chat.ex04-isolate-notifications.broker :as broker]
             [clean-chat.pages :as chat-pages]
             [clean-chat.utils :as u]
             [clojure.tools.logging :as log]
@@ -17,10 +17,11 @@
       (do
         (client-api/add-client! clients {:client-id username
                                          :transport :ws
-                                         :ws        ws})
-        (commands/dispatch-command context {:command   :change-room
-                                            :username  username
-                                            :room-name room-name}))
+                                         :ws        ws
+                                         :transform :htmx})
+        (broker/process-command context {:command   :join-chat
+                                         :username  username
+                                         :room-name room-name}))
       (notify-and-close-login-failure title ws))))
 
 (defn on-text [{:keys [path-params] :as context} _ws text-message]
@@ -31,21 +32,21 @@
                       :username username
                       :command (some-> HEADERS :HX-Trigger-Name keyword))
                     (dissoc :HEADERS))]
-    (commands/dispatch-command context command)))
+    (broker/process-command context command)))
 
 (defn on-close [{:keys [path-params clients] :as context} _ws _status-code _reason]
   (let [{:keys [username]} path-params]
     (log/debugf "on-close triggered for user: %s" username)
     (client-api/remove-client! clients username)
     (let [command {:command :leave-chat :username username}]
-      (commands/dispatch-command context command))))
+      (broker/process-command context command))))
 
 (defn on-error [{:keys [path-params clients] :as context} ws err]
   (let [{:keys [username]} path-params]
     (log/debugf "on-error triggered for user: %s" username)
     (client-api/remove-client! clients username)
     (let [command {:command :leave-chat :username username}]
-      (commands/dispatch-command context command))
+      (broker/process-command context command))
     (println ws)
     (println err)
     (println "ERROR")))

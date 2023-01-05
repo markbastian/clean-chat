@@ -1,13 +1,15 @@
-(ns clean-chat.ex03-isolate-clients.config
+(ns clean-chat.ex04-isolate-notifications.config
   (:require
+    [clean-chat.ex04-isolate-notifications.client-api :as client-api]
     [clean-chat.web :as web]
+    [clojure.tools.logging :as log]
     [datascript.core :as d]
     [integrant.core :as ig]
     [parts.datascript.core.core :as ds]
     [parts.ring.adapter.jetty9.core :as jetty9]
     [parts.ws-handler :as ws]
     [clean-chat.system :as system]
-    [clean-chat.ex03-isolate-clients.ws-handlers :as ws-handlers]))
+    [clean-chat.ex04-isolate-notifications.ws-handlers :as ws-handlers]))
 
 (def chat-schema
   {:username  {:db/unique :db.unique/identity}
@@ -20,22 +22,26 @@
 (def client-schema
   {:client-id {:db/unique :db.unique/identity}})
 
+(defmethod ig/init-key ::atom [_ initial-value]
+  (log/debug "Creating atom")
+  (atom initial-value))
+
 (def config
-  {[::chat-state ::ds/conn]    {:schema chat-schema}
-   [::clients-state ::ds/conn] {:schema client-schema}
-   ::ws/ws-handlers            {:on-connect #'ws-handlers/on-connect
-                                :on-text    #'ws-handlers/on-text
-                                :on-close   #'ws-handlers/on-close
-                                :on-error   #'ws-handlers/on-error}
-   ::jetty9/server             {:title            "Welcome to Isolated Client Chat!"
-                                :host             "0.0.0.0"
-                                :port             3000
-                                :join?            false
-                                :clients          (ig/ref [::clients-state ::ds/conn])
-                                :conn             (ig/ref [::chat-state ::ds/conn])
-                                :ws-handlers      (ig/ref ::ws/ws-handlers)
-                                :ws-max-idle-time (* 10 60 1000)
-                                :handler          #'web/handler}})
+  {[::chat-state ::ds/conn] {:schema chat-schema}
+   [::clients-state ::atom] {}
+   ::ws/ws-handlers         {:on-connect #'ws-handlers/on-connect
+                             :on-text    #'ws-handlers/on-text
+                             :on-close   #'ws-handlers/on-close
+                             :on-error   #'ws-handlers/on-error}
+   ::jetty9/server          {:title            "Welcome to Isolated Events Chat!"
+                             :host             "0.0.0.0"
+                             :port             3000
+                             :join?            false
+                             :clients          (ig/ref [::clients-state ::atom])
+                             :conn             (ig/ref [::chat-state ::ds/conn])
+                             :ws-handlers      (ig/ref ::ws/ws-handlers)
+                             :ws-max-idle-time (* 10 60 1000)
+                             :handler          #'web/handler}})
 
 (comment
   (system/start config)
@@ -45,17 +51,18 @@
   (let [conn (get (system/system) ::ds/conn)]
     @conn)
 
-  (require '[clean-chat.ex03-isolate-clients.domain :as domain])
-  (require '[clean-chat.ex03-isolate-clients.queries :as queries])
-  (require '[clean-chat.ex03-isolate-clients.commands :as commands])
+  (require '[clean-chat.ex04-isolate-notifications.domain :as domain])
+  (require '[clean-chat.ex04-isolate-notifications.queries :as queries])
+  (require '[clean-chat.ex04-isolate-notifications.commands :as commands])
+  (require '[clean-chat.ex04-isolate-notifications.client-api :as client-api])
   (require '[datascript.core :as d])
 
   (let [conn (::ds/conn (system/system))
         id (:db/id (d/entity @conn [:room-name "foo"]))]
     (d/db-with @conn [[:db/add id :room-name "bar"]]))
 
-  (let [conn (get (system/system) [::clients-state ::ds/conn])]
-    (d/entity @conn [:client-id "Mark"]))
+  (let [conn (get (system/system) [::clients-state ::atom])]
+    conn)
 
   (let [conn (get (system/system) [::chat-state ::ds/conn])]
     (commands/dispatch-command
