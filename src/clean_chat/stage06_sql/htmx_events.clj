@@ -1,6 +1,6 @@
 (ns clean-chat.stage06-sql.htmx-events
   (:require
-    [clean-chat.stage06-sql.client-api :as client-api]
+    [clean-chat.stage06-sql.client-manager :as client-api]
     [clean-chat.stage06-sql.planex-api :as planex-api]
     [clean-chat.stage06-sql.chat-api :as chat-api]
     [clean-chat.stage06-sql.htmx-notifications :as htmx-notifications]
@@ -45,6 +45,6 @@
   (htmx-notifications/broadcast-update-room-list context clients)
   (htmx-notifications/broadcast-to-room context new-room-name
     (format "Room name changed to %s" new-room-name))
-  (doseq [username (chat-api/all-active-users context)
+  (doseq [username (chat-api/users-in-room context new-room-name)
           :let [client (client-api/get-client clients username)]]
     (htmx-notifications/notify-update-room-names client new-room-name)))

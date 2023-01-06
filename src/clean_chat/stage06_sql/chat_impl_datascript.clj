@@ -44,16 +44,4 @@
   (room [{:keys [db]} room-name]
     (d/entity db [:room-name room-name]))
   (chat-history [{:keys [db]} room-name]
-    (->> (d/q
-           '[:find ?username ?message ?t
-             :keys username message t
-             :in $ ?room-name
-             :where
-             [?r :room-name ?room-name]
-             [?m :room ?r]
-             [?m :user ?u]
-             [?u :username ?username]
-             [?m :message ?message]
-             [?m :nanos-since-unix-epoch ?t]]
-           db room-name)
-         (sort-by :t))))
+    (queries/chat-history db room-name)))

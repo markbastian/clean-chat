@@ -1,5 +1,5 @@
 (ns clean-chat.stage06-sql.client-ws
-  (:require [clean-chat.stage06-sql.client-api :as client-api]
+  (:require [clean-chat.stage06-sql.client-manager :as client-api]
             [clojure.tools.logging :as log]
             [ring.adapter.jetty9 :as jetty]))
 

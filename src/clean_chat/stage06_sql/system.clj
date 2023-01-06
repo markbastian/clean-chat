@@ -38,7 +38,7 @@
                              :host             "0.0.0.0"
                              :port             3000
                              :join?            false
-                             :clients          (ig/ref [::clients-state ::atom])
+                             :client-manager   (ig/ref [::clients-state ::atom])
                              :conn             (ig/ref [::chat-state ::atom])
                              :sqldb            (ig/ref ::jdbc/datasource)
                              :ws-handlers      (ig/ref ::ws/ws-handlers)
