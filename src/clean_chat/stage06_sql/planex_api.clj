@@ -20,3 +20,9 @@
 (defmethod dispatch-event :default [{:keys [transform]}
                                     {:keys [event]}]
   (log/warnf "Unhandled dispatch value: [%s %s]" transform event))
+
+(defprotocol IOutbox
+  (outbox-write! [this event])
+  (outbox-read [this])
+  (outbox-get [this event])
+  (outbox-delete! [this event]))

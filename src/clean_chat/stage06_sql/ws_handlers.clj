@@ -1,6 +1,6 @@
 (ns clean-chat.stage06-sql.ws-handlers
   (:require [clean-chat.stage06-sql.client-manager :as client-api]
-            [clean-chat.stage06-sql.broker :as broker]
+            [clean-chat.stage06-sql.tx-broker :as broker]
             [clean-chat.pages :as chat-pages]
             [clean-chat.utils :as u]
             [clojure.tools.logging :as log]

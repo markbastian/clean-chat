@@ -1,7 +1,9 @@
 (ns clean-chat.stage06-sql.sql-queries
-  (:require [honey.sql :as hsql]
-            [next.jdbc.sql :as sql]
-            [clojure.set :refer [rename-keys]]))
+  (:require
+    [clojure.edn :as edn]
+    [honey.sql :as hsql]
+    [next.jdbc.sql :as sql]
+    [clojure.set :refer [rename-keys]]))
 
 (def room-domain->sql-keys {:room-name :name})
 (def room-sql->domain-keys {:name      :room-name
@@ -115,11 +117,36 @@
     (sql/insert! this :message sql-message)
     (get-message this sql-message)))
 
-;(-> {:delete [:films :directors],
-;     :from [:films],
-;     :join [:directors [:= :films.director_id :directors.id]],
-;     :where [:<> :kind "musical"]}
-;    (sql/format {:pretty true}))
+(def outbox-sql->domain-keys {:outbox/uuid  :uuid
+                              :outbox/nanos :nanos
+                              :outbox/event :event})
+
+(def select-outbox-sql {:select [:*] :from :outbox :order-by [:nanos]})
+
+(defn get-outbox-events [this]
+  (->> (sql/query this (hsql/format select-outbox-sql))
+       (map (comp edn/read-string :outbox/event))))
+
+(defn get-outbox-event [this {:keys [uuid]}]
+  (let [sql (hsql/format (assoc select-outbox-sql :where [:= :uuid uuid]))]
+    (-> (sql/query this sql)
+        first
+        :outbox/event
+        edn/read-string)))
+
+(defn insert-outbox-event! [this {:keys [uuid nanos] :as evt}]
+  (let [{:keys [uuid nanos] :as sql-message} (cond-> evt
+                                                     (nil? uuid)
+                                                     (assoc :uuid (random-uuid))
+                                                     (nil? nanos)
+                                                     (assoc :nanos (System/nanoTime)))]
+    (sql/insert! this :outbox {:uuid  uuid
+                               :nanos nanos
+                               :event sql-message})
+    (get-outbox-event this sql-message)))
+
+(defn delete-outbox-event! [this {:keys [uuid]}]
+  (sql/delete! this :outbox ["uuid = ?" uuid]))
 
 (defn occupied-rooms [this]
   (let [sql (-> select-room-sql

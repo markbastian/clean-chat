@@ -57,8 +57,8 @@
                              :port             3000
                              :join?            false
                              :client-manager   (ig/ref [::clients-state ::atom])
-                             ;:conn             (ig/ref ::sql-chat)
-                             :conn             (ig/ref [::chat-state ::atom])
+                             :conn             (ig/ref ::sql-chat)
+                             ;:conn             (ig/ref [::chat-state ::atom])
                              :sqldb            (ig/ref ::jdbc/datasource)
                              :ws-handlers      (ig/ref ::ws/ws-handlers)
                              :ws-max-idle-time (* 10 60 1000)

@@ -34,6 +34,7 @@
     {:create-table [:outbox :if-not-exists]
      :with-columns
      [[:uuid :uuid [:primary-key] [:not nil]]
+      [:nanos :long [:not nil]]
       [:event :text]]}))
 
 (def drop-message-table-sql
