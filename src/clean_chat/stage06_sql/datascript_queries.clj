@@ -1,4 +1,4 @@
-(ns clean-chat.stage06-sql.queries
+(ns clean-chat.stage06-sql.datascript-queries
   (:require
     [datascript.core :as d]))
 

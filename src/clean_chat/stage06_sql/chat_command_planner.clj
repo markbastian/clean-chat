@@ -29,8 +29,8 @@
   [context {:keys [username room-name]}]
   (when-not (chat-api/room context room-name)
     (let [old-room-name (chat-api/current-room-name context username)
-          id (:db/id (chat-api/room context old-room-name))]
-      (when (and id (not= room-name old-room-name))
+          old-room (chat-api/room context old-room-name)]
+      (when (and old-room (not= room-name old-room-name))
         [{:event         :rename-room
           :old-room-name old-room-name
           :new-room-name room-name}]))))

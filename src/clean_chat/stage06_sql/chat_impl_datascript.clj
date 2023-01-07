@@ -1,6 +1,6 @@
 (ns clean-chat.stage06-sql.chat-impl-datascript
   (:require
-    [clean-chat.stage06-sql.queries :as queries]
+    [clean-chat.stage06-sql.datascript-queries :as queries]
     [datascript.core :as d]
     [clean-chat.stage06-sql.chat-api :as chat-api]))
 
@@ -27,7 +27,7 @@
   (enter-room [this {:keys [username room-name]}]
     (update-db this [{:username username :room {:room-name room-name}}]))
   (leave-room [this {:keys [username]}]
-    (update this :db d/db-with [[:db.fn/retractAttribute [:username username] :room]]))
+    (update-db this [[:db.fn/retractAttribute [:username username] :room]]))
   (rename-room [{:keys [db] :as this} {:keys [old-room-name new-room-name]}]
     (let [id (:db/id (queries/room db old-room-name))]
       (let [tx-data [[:db/add id :room-name new-room-name]]]
