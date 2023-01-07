@@ -23,6 +23,10 @@
         (.getMessage e)
         (with-out-str (pp/pprint command))))))
 
+;; TODO!!!!! GENERALIZE AND FIX FOR SQLLITE
+;; We must hide the fact that the outbox is a key (make it an api)
+;; and we need to make conn not be an atom (again, api)
+;; and (aside) the sql chat api isn't transactional :( UGH
 (defn process-command [{:keys [clients conn] :as context} command]
   (let [{:keys [outbox]} (plan-and-execute! context command)]
     (doseq [[transform clients-by-transform] (client-api/clients-by-transform clients)
