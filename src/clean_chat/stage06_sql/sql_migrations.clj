@@ -14,20 +14,20 @@
      :with-columns
      [[:uuid :uuid :primary-key [:not nil]]
       [:name :varchar :unique [:not nil]]
-      [:room-name :varchar]
-      [[:foreign-key :room-name] [:references :room :name]]]}))
+      [:room-uuid :uuid]
+      [[:foreign-key :room-uuid] [:references :room :uuid]]]}))
 
 (def create-message-table-sql
   (hsql/format
     {:create-table [:message :if-not-exists]
      :with-columns
      [[:uuid :uuid :primary-key [:not nil]]
-      [:user-name :varchar [:not nil]]
-      [:room-name :varchar [:not nil]]
+      [:user-uuid :uuid [:not nil]]
+      [:room-uuid :uuid [:not nil]]
       [:message :varchar [:not nil]]
       [:nanos :long [:not nil]]
-      [[:foreign-key :user-name] [:references :user :name]]
-      [[:foreign-key :room-name] [:references :room :name]]]}))
+      [[:foreign-key :user-uuid] [:references :user :uuid]]
+      [[:foreign-key :room-uuid] [:references :room :uuid]]]}))
 
 (def create-outbox-table-sql
   (hsql/format

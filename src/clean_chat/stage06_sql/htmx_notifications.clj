@@ -3,7 +3,6 @@
             [clean-chat.stage06-sql.chat-api :as chat-api]
             [clean-chat.stage06-sql.client-manager :as client-api]
             [clean-chat.stage06-sql.client-ws]
-            [clojure.pprint :as pp]
             [hiccup.page :refer [html5]]))
 
 (defn notify-update-chat-prompt [client room-name]
