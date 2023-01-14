@@ -5,8 +5,8 @@
 (defmethod command-api/dispatch-command :chat-message
   [context {:keys [username chat-message]}]
   (chat/create-chat-message
-    (update context :clients deref)
-    username chat-message))
+   (update context :clients deref)
+   username chat-message))
 
 (defmethod command-api/dispatch-command :change-room
   [context {:keys [username room-name]}]

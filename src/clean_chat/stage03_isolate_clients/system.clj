@@ -58,29 +58,27 @@
 
   (let [conn (get (system/system) [::chat-state ::ds/conn])]
     (commands/dispatch-command
-      {:conn conn}
-      {:command   :change-room
-       :username  "Mark"
-       :room-name "froob"}))
+     {:conn conn}
+     {:command   :change-room
+      :username  "Mark"
+      :room-name "froob"}))
 
   (let [conn (::ds/conn (system/system))]
     (commands/dispatch-command
-      {:conn conn}
-      {:command      :chat-message
-       :username     "Mark"
-       :chat-message "What's going on?"}))
+     {:conn conn}
+     {:command      :chat-message
+      :username     "Mark"
+      :chat-message "What's going on?"}))
 
   (let [conn (::ds/conn (system/system))]
     (commands/dispatch-command
-      {:conn conn}
-      {:command   :change-room
-       :username  "Mark"
-       :room-name "public"}))
+     {:conn conn}
+     {:command   :change-room
+      :username  "Mark"
+      :room-name "public"}))
 
   (let [conn (::ds/conn (system/system))]
     (queries/chat-history @conn "public"))
 
-
   (let [conn (::ds/conn (system/system))]
-    (d/q domain/all-active-users-query @conn))
-  )
+    (d/q domain/all-active-users-query @conn)))

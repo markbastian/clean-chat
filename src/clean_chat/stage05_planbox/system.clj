@@ -42,5 +42,4 @@
 (comment
   (system/start config)
   (system/stop)
-  (system/restart config)
-  )
+  (system/restart config))

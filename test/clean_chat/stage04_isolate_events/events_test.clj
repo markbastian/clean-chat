@@ -1,14 +1,14 @@
-(ns clean-chat.stage04-isolate-notifications.events-test
+(ns clean-chat.stage04-isolate-events.events-test
   (:require [clojure.test :refer :all])
   (:require [clojure.test :refer :all]))
 
 (deftest join-chat-commands-test
   (testing "Correct commands behavior when joining chat"
     (let [events (commands/dispatch-command
-                   {:conn (d/create-conn config/chat-schema)}
-                   {:command   :join-chat
-                    :username  "Mark"
-                    :room-name "public"})]
+                  {:conn (d/create-conn config/chat-schema)}
+                  {:command   :join-chat
+                   :username  "Mark"
+                   :room-name "public"})]
       (is (= [{:event :join-chat :username "Mark"}
               {:event :create-room :room-name "public"}
               {:event :enter-room :room-name "public" :username "Mark"}]
@@ -18,14 +18,14 @@
   (testing "Correct commands behavior when joining chat"
     (let [conn (d/create-conn config/chat-schema)
           join-events (commands/dispatch-command
-                        {:conn conn}
-                        {:command   :join-chat
-                         :username  "Mark"
-                         :room-name "public"})
+                       {:conn conn}
+                       {:command   :join-chat
+                        :username  "Mark"
+                        :room-name "public"})
           leave-events (commands/dispatch-command
-                         {:conn conn}
-                         {:command  :leave-chat
-                          :username "Mark"})]
+                        {:conn conn}
+                        {:command  :leave-chat
+                         :username "Mark"})]
       (is (= [{:event :join-chat :username "Mark"}
               {:event :create-room :room-name "public"}
               {:event :enter-room :room-name "public" :username "Mark"}]
@@ -36,7 +36,7 @@
   (testing "Leaving without being present is a null-op"
     (let [conn (d/create-conn config/chat-schema)
           events (commands/dispatch-command
-                   {:conn conn}
-                   {:command  :leave-chat
-                    :username "Mark"})]
+                  {:conn conn}
+                  {:command  :leave-chat
+                   :username "Mark"})]
       (is (nil? events)))))

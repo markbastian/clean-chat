@@ -7,7 +7,7 @@
             [clojure.tools.logging :as log]
             [hiccup.page :refer [html5]]
             [ring.adapter.jetty9 :as jetty]
-            [ring.util.http-response :refer [ok internal-server-error]]
+            [ring.util.http-response :refer [internal-server-error ok]]
             [sca.api.client :as client-api]
             [sca.api.lifecycle :as lifecycle-api]))
 
@@ -23,8 +23,8 @@
         (lifecycle-api/sync-handler context command))
       (do
         (jetty/send!
-          ws
-          (html5 (chat-pages/show-chat-login title {:hx-swap-oob "true"})))
+         ws
+         (html5 (chat-pages/show-chat-login title {:hx-swap-oob "true"})))
         (jetty/close! ws)))))
 
 (defn on-text [{:keys [path-params] :as context} _ws text-message]
@@ -33,8 +33,8 @@
         command (keyword (get-in json [:HEADERS :HX-Trigger-Name]))]
     (lifecycle-api/sync-handler context (-> json
                                             (assoc
-                                              :username username
-                                              :command command)
+                                             :username username
+                                             :command command)
                                             (dissoc :HEADERS)))))
 
 (defn on-close [{:keys [clients path-params] :as context} _ws _status-code _reason]
@@ -81,8 +81,8 @@
          :or   {username "TESTUSER" room-name "TESTROOM"}} params
         args {:username username :room-name room-name}]
     (ok (chat-pages/wrap-as-page
-          (chat-pages/chat-page
-            (update request :params merge args))))))
+         (chat-pages/chat-page
+          (update request :params merge args))))))
 
 (defn post-chatroom-page-handler [request]
   (ok (chat-pages/chat-page request)))

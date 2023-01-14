@@ -19,8 +19,8 @@
         {:keys [HEADERS] :as json} (u/read-json text-message)
         command (-> json
                     (assoc
-                      :username username
-                      :command (some-> HEADERS :HX-Trigger-Name keyword))
+                     :username username
+                     :command (some-> HEADERS :HX-Trigger-Name keyword))
                     (dissoc :HEADERS))]
     (commands/dispatch-command context command)))
 

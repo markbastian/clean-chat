@@ -20,10 +20,10 @@
                                          :ws        ws
                                          :transform :htmx})
         (broker/process-command
-          (update context :clients deref)
-          {:command   :join-chat
-           :username  username
-           :room-name room-name}))
+         (update context :clients deref)
+         {:command   :join-chat
+          :username  username
+          :room-name room-name}))
       (notify-and-close-login-failure title ws))))
 
 (defn on-text [{:keys [path-params] :as context} _ws text-message]
@@ -31,8 +31,8 @@
         {:keys [HEADERS] :as json} (u/read-json text-message)
         command (-> json
                     (assoc
-                      :username username
-                      :command (some-> HEADERS :HX-Trigger-Name keyword))
+                     :username username
+                     :command (some-> HEADERS :HX-Trigger-Name keyword))
                     (dissoc :HEADERS))]
     (broker/process-command (update context :clients deref) command)))
 

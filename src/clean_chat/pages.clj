@@ -1,22 +1,22 @@
 (ns clean-chat.pages
   (:require
-    [clean-chat.utils :as u]
-    [clojure.java.io :as io]
-    [hiccup.page :refer [html5 include-css include-js]]))
+   [clean-chat.utils :as u]
+   [clojure.java.io :as io]
+   [hiccup.page :refer [html5 include-css include-js]]))
 
 (defn wrap-as-page [content]
   (html5
-    (include-css
-      "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
-      "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css")
-    (include-js
-      "https://unpkg.com/htmx.org@1.8.4"
-      "https://unpkg.com/htmx.org/dist/ext/ws.js"
-      "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js")
-    [:style (slurp (io/resource "clean_chat/styles.css"))]
-    [:style (slurp (io/resource "clean_chat/sidebars.css"))]
-    [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
-    content))
+   (include-css
+    "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css")
+   (include-js
+    "https://unpkg.com/htmx.org@1.8.4"
+    "https://unpkg.com/htmx.org/dist/ext/ws.js"
+    "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js")
+   [:style (slurp (io/resource "clean_chat/styles.css"))]
+   [:style (slurp (io/resource "clean_chat/sidebars.css"))]
+   [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
+   content))
 
 (defn show-chat-login [title & attributes]
   [:div (into {:id "app"} attributes)
@@ -93,8 +93,8 @@
   (let [attrs {:ws-send "true" :name "change-room" :method :post}
         f (fn [room-name]
             (sidebar-sublist-item
-              room-name
-              (assoc attrs :hx-vals (u/to-json-str {:room-name room-name}))))]
+             room-name
+             (assoc attrs :hx-vals (u/to-json-str {:room-name room-name}))))]
     (->> rooms-names sort (map f))))
 
 (defn sidebar-sublist [& r]
@@ -102,24 +102,24 @@
 
 (defn sidebar-room-names [room-names]
   (sidebar-sublist
-    {:id "roomList"}
-    (map
-      (fn [room-name]
-        (sidebar-sublist-item
-          room-name
-          {:ws-send "true"
-           :name    "change-room"
-           :method  :post
-           :hx-vals (u/to-json-str {:room-name room-name})}))
-      room-names)))
+   {:id "roomList"}
+   (map
+    (fn [room-name]
+      (sidebar-sublist-item
+       room-name
+       {:ws-send "true"
+        :name    "change-room"
+        :method  :post
+        :hx-vals (u/to-json-str {:room-name room-name})}))
+    room-names)))
 
 (defn sidebar-usernames [usernames]
   (sidebar-sublist
-    {:id "userList"}
-    (map
-      (fn [username]
-        (sidebar-sublist-item username {}))
-      usernames)))
+   {:id "userList"}
+   (map
+    (fn [username]
+      (sidebar-sublist-item username {}))
+    usernames)))
 
 (defn sidebar-list [list-name id]
   (let [collapse-id (format "%s-collapse" id)]
@@ -175,9 +175,9 @@
 (defn room-change-link [room-name & attributes]
   [:a#roomChangeLink.link-primary
    (into
-     {:data-bs-toggle "modal"
-      :data-bs-target "#changeRoomModal"}
-     attributes)
+    {:data-bs-toggle "modal"
+     :data-bs-target "#changeRoomModal"}
+    attributes)
    room-name])
 
 (defn notifications-pane [& r]
@@ -198,10 +198,10 @@
   [:div#chatPrompt.input-group.mb-3
    [:input.form-control
     (into
-      {:name         "chat-message"
-       :placeholder  (format "Message #%s" room-name)
-       :autocomplete "off"}
-      attributes)]
+     {:name         "chat-message"
+      :placeholder  (format "Message #%s" room-name)
+      :autocomplete "off"}
+     attributes)]
    [:button.btn.btn-outline-secondary.fixed-bottom
     {:type    "button"
      :ws-send "true"
@@ -212,13 +212,13 @@
 (defn chat-page [{:keys [params] :as _request}]
   (let [{:keys [room-name username]} params]
     (html5
-      [:div.mb-3.vh-100
-       {:hx-ext     "ws"
-        :ws-connect (format "/chat/ws/%s/%s" room-name username)}
-       (navbar)
-       (chat-pane room-name)
-       [:form
-        {:ws-send "true"
-         :name    "chat-message"
-         :method  :post}
-        (chat-prompt room-name)]])))
+     [:div.mb-3.vh-100
+      {:hx-ext     "ws"
+       :ws-connect (format "/chat/ws/%s/%s" room-name username)}
+      (navbar)
+      (chat-pane room-name)
+      [:form
+       {:ws-send "true"
+        :name    "chat-message"
+        :method  :post}
+       (chat-prompt room-name)]])))

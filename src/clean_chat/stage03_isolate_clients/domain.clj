@@ -14,7 +14,7 @@
     ;; Notifications
     (let [client (client-api/get-client clients username)]
       (htmx-notifications/broadcast-to-room
-        clients @conn room-name (format "%s: %s" username message))
+       clients @conn room-name (format "%s: %s" username message))
       (htmx-notifications/notify-update-chat-prompt client room-name))))
 
 (defn join-room! [{:keys [clients conn]} {:keys [username room-name]}]
@@ -53,10 +53,10 @@
           ;; Notifications
           (htmx-notifications/broadcast-update-room-list clients db-after)
           (htmx-notifications/broadcast-to-room
-            clients
-            @conn
-            room-name
-            (format "Room name changed to %s" room-name))
+           clients
+           @conn
+           room-name
+           (format "Room name changed to %s" room-name))
           (doseq [username (queries/all-active-users @conn)
                   :let [client (client-api/get-client clients username)]]
             (htmx-notifications/notify-update-room-names client room-name)))))))

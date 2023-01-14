@@ -6,9 +6,9 @@
             [reitit.ring.middleware.muuntaja :as muuntaja]
             [reitit.ring.middleware.parameters :as parameters]
             [ring.adapter.jetty9 :as jetty]
-            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
+            [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
             [ring.middleware.json :refer [wrap-json-response]]
-            [ring.util.http-response :refer [ok internal-server-error not-found]]))
+            [ring.util.http-response :refer [internal-server-error not-found ok]]))
 
 (defn ws-upgrade-handler [{:keys [ws-handlers] :as context} upgrade-request]
   (let [{:keys [on-connect on-text on-bytes on-close on-ping on-pong on-error]} ws-handlers
@@ -40,8 +40,8 @@
          :or   {username "TESTUSER" room-name "TESTROOM"}} params
         args {:username username :room-name room-name}]
     (ok (chat-pages/wrap-as-page
-          (chat-pages/chat-page
-            (update request :params merge args))))))
+         (chat-pages/chat-page
+          (update request :params merge args))))))
 
 (defn post-chatroom-page-handler [request]
   (ok (chat-pages/chat-page request)))
@@ -56,17 +56,17 @@
 
 (def handler
   (ring/ring-handler
-    (ring/router
-      routes
-      {:data {:middleware [[wrap-defaults
-                            (-> site-defaults
-                                (update :security dissoc :anti-forgery)
-                                (update :security dissoc :content-type-options)
-                                (update :responses dissoc :content-types))]
+   (ring/router
+    routes
+    {:data {:middleware [[wrap-defaults
+                          (-> site-defaults
+                              (update :security dissoc :anti-forgery)
+                              (update :security dissoc :content-type-options)
+                              (update :responses dissoc :content-types))]
                            ;wrap-params
-                           wrap-json-response
-                           parameters/parameters-middleware
-                           muuntaja/format-request-middleware
-                           coercion/coerce-response-middleware
-                           coercion/coerce-request-middleware]}})
-    (constantly (not-found "Not found"))))
+                         wrap-json-response
+                         parameters/parameters-middleware
+                         muuntaja/format-request-middleware
+                         coercion/coerce-response-middleware
+                         coercion/coerce-request-middleware]}})
+   (constantly (not-found "Not found"))))

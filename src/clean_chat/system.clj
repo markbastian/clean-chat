@@ -91,6 +91,5 @@
                                          (d/with [[:db/retractEntity [:username "A"]]]))
         room (:room-name (d/entity db-before [:username "A"]))]
     (d/q
-      '[:find ?e . :in $ ?room-name :where [?e :room-name ?room-name]]
-      db-after room))
-  )
+     '[:find ?e . :in $ ?room-name :where [?e :room-name ?room-name]]
+     db-after room)))

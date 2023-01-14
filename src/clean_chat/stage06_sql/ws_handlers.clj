@@ -1,8 +1,8 @@
 (ns clean-chat.stage06-sql.ws-handlers
   (:require [clean-chat.pages :as chat-pages]
-            [clean-chat.stage06-sql.client-manager :as client-api]
-    ;[clean-chat.stage06-sql.broker-sql :as broker-sql]
             [clean-chat.stage06-sql.broker-ref :as broker-ref]
+    ;[clean-chat.stage06-sql.broker-sql :as broker-sql]
+            [clean-chat.stage06-sql.client-manager :as client-api]
             [clean-chat.utils :as u]
             [clojure.pprint :as pp]
             [clojure.tools.logging :as log]
@@ -22,12 +22,12 @@
                                                 :ws        ws
                                                 :transform :htmx})
         (broker-ref/process-command
-          (-> context
-              (dissoc :client-manager)
-              (assoc :clients @client-manager))
-          {:command   :join-chat
-           :username  username
-           :room-name room-name}))
+         (-> context
+             (dissoc :client-manager)
+             (assoc :clients @client-manager))
+         {:command   :join-chat
+          :username  username
+          :room-name room-name}))
       (notify-and-close-login-failure title ws))))
 
 (defn on-text [{:keys [path-params client-manager] :as context} _ws text-message]
@@ -35,14 +35,14 @@
         {:keys [HEADERS] :as json} (u/read-json text-message)
         command (-> json
                     (assoc
-                      :username username
-                      :command (some-> HEADERS :HX-Trigger-Name keyword))
+                     :username username
+                     :command (some-> HEADERS :HX-Trigger-Name keyword))
                     (dissoc :HEADERS))]
     (broker-ref/process-command
-      (-> context
-          (dissoc :client-manager)
-          (assoc :clients @client-manager))
-      command)))
+     (-> context
+         (dissoc :client-manager)
+         (assoc :clients @client-manager))
+     command)))
 
 (defn on-close [{:keys [path-params client-manager] :as context} _ws _status-code _reason]
   (let [{:keys [username]} path-params]
@@ -50,10 +50,10 @@
     (client-api/remove-client! client-manager username)
     (let [command {:command :leave-chat :username username}]
       (broker-ref/process-command
-        (-> context
-            (dissoc :client-manager)
-            (assoc :clients @client-manager))
-        command))))
+       (-> context
+           (dissoc :client-manager)
+           (assoc :clients @client-manager))
+       command))))
 
 (defn on-error [{:keys [path-params client-manager] :as context} ws err]
   (let [{:keys [username]} path-params]
@@ -61,10 +61,10 @@
     (client-api/remove-client! client-manager username)
     (let [command {:command :leave-chat :username username}]
       (broker-ref/process-command
-        (-> context
-            (dissoc :client-manager)
-            (assoc :clients @client-manager))
-        command))
+       (-> context
+           (dissoc :client-manager)
+           (assoc :clients @client-manager))
+       command))
     (println ws)
     (println err)
     (println "ERROR")))

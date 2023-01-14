@@ -7,12 +7,12 @@
 
 (defn notify-update-chat-prompt [client room-name]
   (let [html (html5 (chat-pages/chat-prompt
-                      room-name {:autofocus "true" :hx-swap-oob "true"}))]
+                     room-name {:autofocus "true" :hx-swap-oob "true"}))]
     (client-api/send! client html)))
 
 (defn notify-update-room-change-link [client room-name]
   (let [html (html5 (chat-pages/room-change-link
-                      room-name {:hx-swap-oob "true"}))]
+                     room-name {:hx-swap-oob "true"}))]
     (client-api/send! client html)))
 
 (defn notify-update-room-names [client room-name]
@@ -38,9 +38,9 @@
 
 (defn broadcast-to-room [{:keys [clients] :as context} room-name message]
   (let [html (html5
-               (chat-pages/notifications-pane
-                 {:hx-swap-oob "beforeend"}
-                 [:div [:i message]]))
+              (chat-pages/notifications-pane
+               {:hx-swap-oob "beforeend"}
+               [:div [:i message]]))
         usernames (chat-api/users-in-room context room-name)]
     (client-api/broadcast! clients usernames html)))
 
@@ -48,13 +48,13 @@
   (let [room-name (chat-api/current-room-name context username)
         chat-history (chat-api/chat-history context room-name)
         divs (mapv
-               (fn [{:keys [username message]}]
-                 [:div [:i (format "%s: %s" username message)]])
-               chat-history)
+              (fn [{:keys [username message]}]
+                [:div [:i (format "%s: %s" username message)]])
+              chat-history)
         html (html5 (apply
-                      chat-pages/notifications-pane
-                      {:hx-swap-oob "true"}
-                      divs))]
+                     chat-pages/notifications-pane
+                     {:hx-swap-oob "true"}
+                     divs))]
     (client-api/send! (client-api/get-client clients username) html)))
 
 (defn broadcast-enter-room [{:keys [clients] :as context} username new-room-name]

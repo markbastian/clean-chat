@@ -1,6 +1,6 @@
 (ns clean-chat.stage06-sql.queries-datascript
   (:require
-    [datascript.core :as d]))
+   [datascript.core :as d]))
 
 (def chat-schema
   {:username  {:db/unique :db.unique/identity}
@@ -33,13 +33,13 @@
 
 (defn users-in-room [db room-name]
   (d/q
-    '[:find [?username ...]
-      :in $ ?room-name
-      :where
-      [?room :room-name ?room-name]
-      [?client :room ?room]
-      [?client :username ?username]]
-    db room-name))
+   '[:find [?username ...]
+     :in $ ?room-name
+     :where
+     [?room :room-name ?room-name]
+     [?client :room ?room]
+     [?client :username ?username]]
+   db room-name))
 
 (defn current-room-name [db username]
   (some-> db (d/entity [:username username]) :room :room-name))
@@ -49,17 +49,17 @@
 
 (defn chat-history [db room-name]
   (->> (d/q
-         '[:find ?username ?message ?t
-           :keys username message t
-           :in $ ?room-name
-           :where
-           [?r :room-name ?room-name]
-           [?m :room ?r]
-           [?m :user ?u]
-           [?u :username ?username]
-           [?m :message ?message]
-           [?m :nanos ?t]]
-         db room-name)
+        '[:find ?username ?message ?t
+          :keys username message t
+          :in $ ?room-name
+          :where
+          [?r :room-name ?room-name]
+          [?m :room ?r]
+          [?m :user ?u]
+          [?u :username ?username]
+          [?m :message ?message]
+          [?m :nanos ?t]]
+        db room-name)
        (sort-by :t)))
 
 ;; Functional commands ;;

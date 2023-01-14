@@ -1,23 +1,21 @@
 (ns clean-chat.stage06-sql.system
   (:require
-    [clean-chat.stage06-sql.chat-api :as chat-api]
-    [clean-chat.stage06-sql.chat-impl-atom :as cid]
-    [clean-chat.stage06-sql.chat-impl-ref :as cir]
-    [clean-chat.stage06-sql.chat-impl-sqlite :as cis]
-    [clean-chat.stage06-sql.planex-api :as planex-api]
-    [clean-chat.stage06-sql.queries-datascript :as queries]
-    [clean-chat.stage06-sql.sql-migrations :as sql-migrations]
-    [clean-chat.stage06-sql.ws-handlers :as ws-handlers]
-    [clean-chat.system :as system]
-    [clean-chat.web :as web]
-    [clojure.tools.logging :as log]
-    [datascript.core :as d]
-    [integrant.core :as ig]
-    [parts.next.jdbc.core :as jdbc]
-    [parts.ring.adapter.jetty9.core :as jetty9]
-    [parts.ws-handler :as ws]))
-
-
+   [clean-chat.stage06-sql.chat-api :as chat-api]
+   [clean-chat.stage06-sql.chat-impl-atom :as cid]
+   [clean-chat.stage06-sql.chat-impl-ref :as cir]
+   [clean-chat.stage06-sql.chat-impl-sqlite :as cis]
+   [clean-chat.stage06-sql.planex-api :as planex-api]
+   [clean-chat.stage06-sql.queries-datascript :as queries]
+   [clean-chat.stage06-sql.sql-migrations :as sql-migrations]
+   [clean-chat.stage06-sql.ws-handlers :as ws-handlers]
+   [clean-chat.system :as system]
+   [clean-chat.web :as web]
+   [clojure.tools.logging :as log]
+   [datascript.core :as d]
+   [integrant.core :as ig]
+   [parts.next.jdbc.core :as jdbc]
+   [parts.ring.adapter.jetty9.core :as jetty9]
+   [parts.ws-handler :as ws]))
 
 (defmethod ig/init-key ::atom [_ initial-value]
   (log/debug "Creating atom")
@@ -42,8 +40,8 @@
 
 (def config
   {[::chat-state ::atom]    (cid/map->DatascriptChat
-                              {:db     (d/empty-db queries/chat-schema)
-                               :outbox []})
+                             {:db     (d/empty-db queries/chat-schema)
+                              :outbox []})
    [::db ::ref]             (d/empty-db queries/chat-schema)
    [::outbox ::ref]         []
    ::ref-chat               {:db     (ig/ref [::db ::ref])
@@ -93,10 +91,9 @@
 
   (let [r (get (system/system) ::ref-chat)]
     (dosync
-      (chat-api/join-chat! r {:username "Bob"})
-      (chat-api/enter-room! r {:username "Bob"
+     (chat-api/join-chat! r {:username "Bob"})
+     (chat-api/enter-room! r {:username "Bob"
                               :room-name "public"})
-      (chat-api/create-message! r {:username "Bob"
+     (chat-api/create-message! r {:username "Bob"
                                   :room-name "public"
-                                  :message   "Hi"})))
-  )
+                                  :message   "Hi"}))))

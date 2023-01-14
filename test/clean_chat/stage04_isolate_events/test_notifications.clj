@@ -1,6 +1,6 @@
-(ns clean-chat.stage04-isolate-notifications.test-notifications
-  (:require [clean-chat.stage04-isolate-notifications.client-api :as client-api]
-            [clean-chat.stage04-isolate-notifications.events :as events]
+(ns clean-chat.stage04-isolate-events.test-notifications
+  (:require [clean-chat.stage04-isolate-events.client-api :as client-api]
+            [clean-chat.stage04-isolate-events.events :as events]
             [clojure.test :refer :all]))
 
 (defn echo-message [{:keys [clients]} event]
@@ -21,6 +21,3 @@
   (echo-message ctx event))
 (defmethod events/dispatch-event [:test :rename-room] [ctx event]
   (echo-message ctx event))
-
-
-

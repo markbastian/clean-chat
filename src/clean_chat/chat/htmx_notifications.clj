@@ -35,9 +35,9 @@
 (defn broadcast-to-room [clients db room-name message]
   (let [usernames (chat-queries/users-in-room db room-name)
         message (html5
-                  (chat-pages/notifications-pane
-                    {:hx-swap-oob "beforeend"}
-                    [:div [:i message]]))]
+                 (chat-pages/notifications-pane
+                  {:hx-swap-oob "beforeend"}
+                  [:div [:i message]]))]
     (client-api/broadcast! clients usernames message)))
 
 (defn broadcast-enter-room [clients db username new-room-name]

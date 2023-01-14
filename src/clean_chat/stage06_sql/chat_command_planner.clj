@@ -19,23 +19,23 @@
   (when-some [old-room-name (chat-api/current-room-name context username)]
     (when-not (= room-name old-room-name)
       (cond-> []
-              old-room-name
-              (conj {:event     :leave-room
-                     :uuid      (random-uuid)
-                     :nanos     (System/nanoTime)
-                     :room-name old-room-name
-                     :username  username})
-              (not (chat-api/room context room-name))
-              (conj {:event     :create-room
-                     :uuid      (random-uuid)
-                     :nanos     (System/nanoTime)
-                     :room-name room-name})
-              true
-              (conj {:event     :enter-room
-                     :uuid      (random-uuid)
-                     :nanos     (System/nanoTime)
-                     :room-name room-name
-                     :username  username})))))
+        old-room-name
+        (conj {:event     :leave-room
+               :uuid      (random-uuid)
+               :nanos     (System/nanoTime)
+               :room-name old-room-name
+               :username  username})
+        (not (chat-api/room context room-name))
+        (conj {:event     :create-room
+               :uuid      (random-uuid)
+               :nanos     (System/nanoTime)
+               :room-name room-name})
+        true
+        (conj {:event     :enter-room
+               :uuid      (random-uuid)
+               :nanos     (System/nanoTime)
+               :room-name room-name
+               :username  username})))))
 
 (defmethod planex-api/generate-plan :rename-room
   [context {:keys [username room-name]}]
@@ -56,17 +56,17 @@
               :uuid     (random-uuid)
               :nanos    (System/nanoTime)
               :username username}]
-            (not (chat-api/room context room-name))
-            (conj {:event     :create-room
-                   :uuid      (random-uuid)
-                   :nanos     (System/nanoTime)
-                   :room-name room-name})
-            true
-            (conj {:event     :enter-room
-                   :uuid      (random-uuid)
-                   :nanos     (System/nanoTime)
-                   :room-name room-name
-                   :username  username}))))
+      (not (chat-api/room context room-name))
+      (conj {:event     :create-room
+             :uuid      (random-uuid)
+             :nanos     (System/nanoTime)
+             :room-name room-name})
+      true
+      (conj {:event     :enter-room
+             :uuid      (random-uuid)
+             :nanos     (System/nanoTime)
+             :room-name room-name
+             :username  username}))))
 
 (defmethod planex-api/generate-plan :leave-chat [context {:keys [username]}]
   (when-some [room-name (chat-api/current-room-name context username)]

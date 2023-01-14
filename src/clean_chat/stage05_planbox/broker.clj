@@ -18,9 +18,9 @@
     (swap! conn plan-and-execute command)
     (catch Exception e
       (log/warnf
-        "Command rejected! (%s)\n%s"
-        (.getMessage e)
-        (with-out-str (pp/pprint command))))))
+       "Command rejected! (%s)\n%s"
+       (.getMessage e)
+       (with-out-str (pp/pprint command))))))
 
 (defn process-command [{:keys [clients conn] :as context} command]
   (let [{:keys [db outbox]} (plan-and-execute! context command)]

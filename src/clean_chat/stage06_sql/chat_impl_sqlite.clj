@@ -9,8 +9,8 @@
   chat-api/IChatEvents
   (create-message! [{:keys [db]} event]
     (sql-queries/insert-message!
-      db
-      (select-keys event [:username :room-name :message])))
+     db
+     (select-keys event [:username :room-name :message])))
   (join-chat! [{:keys [db]} {:keys [username]}]
     (sql-queries/upsert-user! db {:username username}))
   (leave-chat! [{:keys [db]} {:keys [username]}]

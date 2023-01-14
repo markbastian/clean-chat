@@ -1,7 +1,7 @@
 (ns clean-chat.stage04-isolate-events.domain
   (:require
-    [clean-chat.stage04-isolate-events.queries :as queries]
-    [datascript.core :as d]))
+   [clean-chat.stage04-isolate-events.queries :as queries]
+   [datascript.core :as d]))
 
 (defn create-chat-message! [{:keys [conn]} username message]
   (let [room-name (queries/current-room-name @conn username)]
@@ -21,10 +21,10 @@
                     :room     {:room-name room-name}}]
           _ (d/transact! conn tx-data)]
       (cond-> [{:event :join-chat :username username}]
-              room-will-be-created?
-              (conj {:event :create-room :room-name room-name})
-              true
-              (conj {:event :enter-room :room-name room-name :username username})))))
+        room-will-be-created?
+        (conj {:event :create-room :room-name room-name})
+        true
+        (conj {:event :enter-room :room-name room-name :username username})))))
 
 (defn join-room! [{:keys [conn]} {:keys [username room-name]}]
   (when-some [old-room-name (queries/current-room-name @conn username)]
@@ -34,12 +34,12 @@
                       :room     {:room-name room-name}}]
             _ (d/transact! conn tx-data)]
         (cond-> []
-                old-room-name
-                (conj {:event :leave-room :room-name old-room-name :username username})
-                room-will-be-created?
-                (conj {:event :create-room :room-name room-name})
-                true
-                (conj {:event :enter-room :room-name room-name :username username}))))))
+          old-room-name
+          (conj {:event :leave-room :room-name old-room-name :username username})
+          room-will-be-created?
+          (conj {:event :create-room :room-name room-name})
+          true
+          (conj {:event :enter-room :room-name room-name :username username}))))))
 
 (defn leave-chat! [{:keys [conn]} username]
   (when-some [room-name (queries/current-room-name @conn username)]

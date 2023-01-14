@@ -1,7 +1,7 @@
 (ns clean-chat.stage06-sql.chat-impl-atom
   (:require [clean-chat.stage06-sql.chat-api :as chat-api]
-            [clean-chat.stage06-sql.queries-datascript :as queries]
             [clean-chat.stage06-sql.planex-api :as planex-api]
+            [clean-chat.stage06-sql.queries-datascript :as queries]
             [datascript.core :as d]))
 
 (defrecord DatascriptChat [db outbox])
@@ -13,10 +13,10 @@
   chat-api/IChatEvents
   (create-message! [this {:keys [username message room-name]}]
     (update-db
-      this
-      [{:message                message
-        :user                   {:username username}
-        :room                   {:room-name room-name}}]))
+     this
+     [{:message                message
+       :user                   {:username username}
+       :room                   {:room-name room-name}}]))
   (join-chat! [this {:keys [username]}]
     (update-db this [{:username username}]))
   (leave-chat! [this {:keys [username]}]

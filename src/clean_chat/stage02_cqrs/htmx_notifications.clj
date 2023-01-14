@@ -33,8 +33,8 @@
 
 (defn broadcast-to-room [db room-name message]
   (let [html (chat-pages/notifications-pane
-               {:hx-swap-oob "beforeend"}
-               [:div [:i message]])]
+              {:hx-swap-oob "beforeend"}
+              [:div [:i message]])]
     (doseq [client (queries/clients-in-room db room-name)]
       (jetty/send! client (html5 html)))))
 
@@ -42,13 +42,13 @@
   (let [{:keys [ws room-name]} (queries/ws+room-name db username)
         chat-history (queries/chat-history db room-name)
         divs (mapv
-               (fn [{:keys [username message]}]
-                 [:div [:i (format "%s: %s" username message)]])
-               chat-history)
+              (fn [{:keys [username message]}]
+                [:div [:i (format "%s: %s" username message)]])
+              chat-history)
         html (apply
-               chat-pages/notifications-pane
-               {:hx-swap-oob "true"}
-               divs)]
+              chat-pages/notifications-pane
+              {:hx-swap-oob "true"}
+              divs)]
     (jetty/send! ws (html5 html))))
 
 (defn broadcast-enter-room [db username new-room-name]

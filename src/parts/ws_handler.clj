@@ -1,8 +1,8 @@
 (ns parts.ws-handler
   (:require
-    [clojure.tools.logging :as log]
-    [integrant.core :as ig]
-    [ring.adapter.jetty9 :as jetty]))
+   [clojure.tools.logging :as log]
+   [integrant.core :as ig]
+   [ring.adapter.jetty9 :as jetty]))
 
 (defn on-bytes [_context _ _ _ _]
   (println "on-bytes unhandled"))
@@ -15,7 +15,7 @@
 (defmethod ig/init-key ::ws-handlers [_ config]
   (log/debug "Configuring websocket handlers.")
   (merge
-    {:on-bytes #'on-bytes
-     :on-ping  #'on-ping
-     :on-pong  #'on-pong}
-    config))
+   {:on-bytes #'on-bytes
+    :on-ping  #'on-ping
+    :on-pong  #'on-pong}
+   config))

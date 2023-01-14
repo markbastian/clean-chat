@@ -1,8 +1,8 @@
 (ns clean-chat.stage02-cqrs.commands
   (:require
-    [clean-chat.stage02-cqrs.domain :as domain]
-    [clojure.pprint :as pp]
-    [clojure.tools.logging :as log]))
+   [clean-chat.stage02-cqrs.domain :as domain]
+   [clojure.pprint :as pp]
+   [clojure.tools.logging :as log]))
 
 (defmulti dispatch-command (fn [_ctx {:keys [command]}] command))
 

@@ -1,9 +1,9 @@
 (ns clean-chat.stage04-isolate-events.events
   (:require
-    [clean-chat.stage04-isolate-events.client-api :as client-api]
-    [clean-chat.stage04-isolate-events.htmx-notifications :as htmx-notifications]
-    [clean-chat.stage04-isolate-events.queries :as queries]
-    [clojure.tools.logging :as log]))
+   [clean-chat.stage04-isolate-events.client-api :as client-api]
+   [clean-chat.stage04-isolate-events.htmx-notifications :as htmx-notifications]
+   [clean-chat.stage04-isolate-events.queries :as queries]
+   [clojure.tools.logging :as log]))
 
 (defmulti dispatch-event (fn [{:keys [transform]} {:keys [event]}]
                            [transform event]))
@@ -28,7 +28,7 @@
   [{:keys [clients db]} {:keys [username room-name message]}]
   (let [client (client-api/get-client clients username)]
     (htmx-notifications/broadcast-to-room
-      clients db room-name (format "%s: %s" username message))
+     clients db room-name (format "%s: %s" username message))
     (htmx-notifications/notify-update-chat-prompt client room-name)))
 
 (defmethod dispatch-event [:htmx :enter-room]
@@ -50,8 +50,8 @@
   (log/debugf "Renaming %s to %s" old-room-name new-room-name)
   (htmx-notifications/broadcast-update-room-list clients db)
   (htmx-notifications/broadcast-to-room
-    clients db new-room-name
-    (format "Room name changed to %s" new-room-name))
+   clients db new-room-name
+   (format "Room name changed to %s" new-room-name))
   (doseq [username (queries/all-active-users db)
           :let [client (client-api/get-client clients username)]]
     (htmx-notifications/notify-update-room-names client new-room-name)))

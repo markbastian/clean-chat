@@ -1,8 +1,8 @@
 (ns clean-chat.stage03-isolate-clients.commands
   (:require
-    [clean-chat.stage03-isolate-clients.domain :as domain]
-    [clojure.pprint :as pp]
-    [clojure.tools.logging :as log]))
+   [clean-chat.stage03-isolate-clients.domain :as domain]
+   [clojure.pprint :as pp]
+   [clojure.tools.logging :as log]))
 
 (defmulti dispatch-command (fn [_ctx {:keys [command]}] command))
 

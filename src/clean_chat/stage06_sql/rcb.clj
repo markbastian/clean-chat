@@ -75,8 +75,7 @@
      (sql-queries/insert-message! ds {:username "Mark" :room-name "public" :message "Hi!!"})
      (sql-queries/get-messages-for-room ds "public")
      (sql-queries/insert-outbox-event! ds {:event :join-room :username "Mark"})
-     (sql-queries/get-outbox-events ds)]
-    )
+     (sql-queries/get-outbox-events ds)])
 
   (let [ds (:clean-chat.stage06-sql.system/sql-chat (system/system))]
     (planex-api/outbox-read ds))
@@ -84,7 +83,4 @@
   ;; Create users, rooms, messages, and outbox tables
   ;; https://github.com/seancorfield/honeysql/blob/develop/doc/clause-reference.md
   ;; https://github.com/seancorfield/honeysql/blob/develop/doc/special-syntax.md#column-descriptors
-
   )
-
-

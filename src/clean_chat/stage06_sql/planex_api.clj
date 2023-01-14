@@ -31,6 +31,3 @@
   (doseq [event events]
     (execute-plan! ctx event)
     (outbox-write! ctx event)))
-
-
-

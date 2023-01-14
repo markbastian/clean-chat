@@ -1,10 +1,10 @@
 (ns clean-chat.stage01-unclean.domain
   (:require
-    [clean-chat.pages :as chat-pages]
-    [clojure.tools.logging :as log]
-    [datascript.core :as d]
-    [hiccup.page :refer [html5]]
-    [ring.adapter.jetty9 :as jetty]))
+   [clean-chat.pages :as chat-pages]
+   [clojure.tools.logging :as log]
+   [datascript.core :as d]
+   [hiccup.page :refer [html5]]
+   [ring.adapter.jetty9 :as jetty]))
 
 (def all-rooms-query
   '[:find [?room-name ...]
@@ -42,9 +42,9 @@
 
 (defn ws+room-name [db username]
   (first
-    (d/q
-      username->ws+room-query
-      db username)))
+   (d/q
+    username->ws+room-query
+    db username)))
 
 (defn current-room-name [db username]
   (some-> db (d/entity [:username username]) :room :room-name))
@@ -78,8 +78,8 @@
 
 (defn broadcast-to-room [db room-name message]
   (let [html (chat-pages/notifications-pane
-               {:hx-swap-oob "beforeend"}
-               [:div [:i message]])]
+              {:hx-swap-oob "beforeend"}
+              [:div [:i message]])]
     (doseq [client (->> (d/entity db [:room-name room-name])
                         :_room
                         (map :ws)

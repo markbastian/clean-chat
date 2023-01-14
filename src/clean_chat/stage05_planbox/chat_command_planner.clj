@@ -1,8 +1,8 @@
 (ns clean-chat.stage05-planbox.chat-command-planner
   (:require
-    [clean-chat.stage05-planbox.planex-api :as planex-api]
-    [clean-chat.stage05-planbox.queries :as queries]
-    [clojure.tools.logging :as log]))
+   [clean-chat.stage05-planbox.planex-api :as planex-api]
+   [clean-chat.stage05-planbox.queries :as queries]
+   [clojure.tools.logging :as log]))
 
 (defmethod planex-api/generate-plan :chat-message
   [{:keys [db]} {:keys [username chat-message]}]
@@ -18,12 +18,12 @@
   (when-some [old-room-name (queries/current-room-name db username)]
     (when-not (= room-name old-room-name)
       (cond-> []
-              old-room-name
-              (conj {:event :leave-room :room-name old-room-name :username username})
-              (not (queries/room-exists? db room-name))
-              (conj {:event :create-room :room-name room-name})
-              true
-              (conj {:event :enter-room :room-name room-name :username username})))))
+        old-room-name
+        (conj {:event :leave-room :room-name old-room-name :username username})
+        (not (queries/room-exists? db room-name))
+        (conj {:event :create-room :room-name room-name})
+        true
+        (conj {:event :enter-room :room-name room-name :username username})))))
 
 (defmethod planex-api/generate-plan :rename-room
   [{:keys [db]} {:keys [username room-name]}]
@@ -39,10 +39,10 @@
   [{:keys [db]} {:keys [username room-name]}]
   (when-not (queries/current-room-name db username)
     (cond-> [{:event :join-chat :username username}]
-            (not (queries/room-exists? db room-name))
-            (conj {:event :create-room :room-name room-name})
-            true
-            (conj {:event :enter-room :room-name room-name :username username}))))
+      (not (queries/room-exists? db room-name))
+      (conj {:event :create-room :room-name room-name})
+      true
+      (conj {:event :enter-room :room-name room-name :username username}))))
 
 (defmethod planex-api/generate-plan :leave-chat [{:keys [db]} {:keys [username]}]
   (when-some [room-name (queries/current-room-name db username)]

@@ -1,7 +1,7 @@
 (ns clean-chat.stage06-sql.chat-impl-ref
   (:require [clean-chat.stage06-sql.chat-api :as chat-api]
-            [clean-chat.stage06-sql.queries-datascript :as queries]
-            [clean-chat.stage06-sql.planex-api :as planex-api]))
+            [clean-chat.stage06-sql.planex-api :as planex-api]
+            [clean-chat.stage06-sql.queries-datascript :as queries]))
 
 (defrecord RefChat [db outbox])
 
@@ -48,6 +48,6 @@
     (first (filter (fn [{:keys [uuid]}] (= to-find uuid)) @outbox)))
   (outbox-delete! [this {to-be-removed :uuid}]
     (update
-      this :outbox commute
-      (fn [events] (vec (remove (fn [{:keys [uuid]}] (= uuid to-be-removed)) events))))
+     this :outbox commute
+     (fn [events] (vec (remove (fn [{:keys [uuid]}] (= uuid to-be-removed)) events))))
     (update-outbox this identity)))

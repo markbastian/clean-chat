@@ -11,9 +11,9 @@
                         :user                   {:username username}
                         :room                   {:room-name room-name}}])
     (log/infof
-      "Broadcasting message '%s' from '%s' to '%s'." message username room-name)
+     "Broadcasting message '%s' from '%s' to '%s'." message username room-name)
     (htmx-notifications/broadcast-to-room
-      @conn room-name (format "%s: %s" username message)))
+     @conn room-name (format "%s: %s" username message)))
   (htmx-notifications/notify-update-chat-prompt @conn username))
 
 (defn join-room! [{:keys [conn]} {:keys [username room-name] :as entity}]
@@ -48,9 +48,9 @@
               {:keys [db-after]} (d/transact! conn tx-data)]
           (htmx-notifications/broadcast-update-room-list db-after)
           (htmx-notifications/broadcast-to-room
-            @conn
-            room-name
-            (format "Room name changed to %s" room-name))
+           @conn
+           room-name
+           (format "Room name changed to %s" room-name))
           (doseq [username (queries/all-active-users @conn)]
             (htmx-notifications/notify-update-chat-prompt @conn username)
             (htmx-notifications/notify-update-room-change-link @conn username)))))))

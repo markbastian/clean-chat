@@ -1,8 +1,8 @@
 (ns parts.next.jdbc.core
   (:require
-    [clojure.tools.logging :as log]
-    [integrant.core :as ig]
-    [next.jdbc :as jdbc]))
+   [clojure.tools.logging :as log]
+   [integrant.core :as ig]
+   [next.jdbc :as jdbc]))
 
 (defmethod ig/init-key ::datasource [_ opts]
   (log/debug "Getting jdbc datasource.")
@@ -21,4 +21,3 @@
   (jdbc/with-transaction [tx db]
     (doseq [command commands]
       (jdbc/execute! tx command))))
-

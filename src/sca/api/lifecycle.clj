@@ -11,8 +11,8 @@
     (doseq [[tx clients] clients-by-tx
             event events]
       (event-api/process-event
-        (assoc context
-          :clients clients
-          :db @conn
-          :transform tx)
-        event))))
+       (assoc context
+              :clients clients
+              :db @conn
+              :transform tx)
+       event))))

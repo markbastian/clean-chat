@@ -23,8 +23,8 @@
 
 (defn insert-room! [this {:keys [uuid] :as room}]
   (let [sql-room (cond-> (rename-keys room room-domain->sql-keys)
-                         (nil? uuid)
-                         (assoc :uuid (random-uuid)))]
+                   (nil? uuid)
+                   (assoc :uuid (random-uuid)))]
     (sql/insert! this :room sql-room)
     (get-room this room)))
 
@@ -59,11 +59,11 @@
                         uuid [:= :user.uuid uuid]
                         name [:= :user.name name])]
       (let [sql (assoc select-user-sql
-                  :select [[:user.uuid :uuid]
-                           [:user.name :username]
-                           [:room.name :room_name]]
-                  :left-join [:room [:= :room.uuid :user.room_uuid]]
-                  :where where)]
+                       :select [[:user.uuid :uuid]
+                                [:user.name :username]
+                                [:room.name :room_name]]
+                       :left-join [:room [:= :room.uuid :user.room_uuid]]
+                       :where where)]
         (-> (sql/query this (hsql/format sql))
             first
             (rename-keys user-sql->domain-keys))))))
@@ -72,22 +72,22 @@
   (let [room-uuid (when room-name
                     (:uuid (get-room this {:name room-name})))
         sql-user (cond-> (rename-keys user user-domain->sql-keys)
-                         (nil? uuid)
-                         (assoc :uuid (random-uuid))
-                         room-uuid
-                         (assoc :room_uuid room-uuid)
-                         room-name
-                         (dissoc :room_name))]
+                   (nil? uuid)
+                   (assoc :uuid (random-uuid))
+                   room-uuid
+                   (assoc :room_uuid room-uuid)
+                   room-name
+                   (dissoc :room_name))]
     (sql/insert! this :user sql-user)
     (get-user this sql-user)))
 
 (defn update-user! [this user]
   (let [{:keys [uuid name room_name] :as sql-user} (rename-keys user user-domain->sql-keys)
         sql-user (cond-> sql-user
-                         (contains? sql-user :room_name)
-                         (->
-                           (dissoc :room_name)
-                           (assoc :room_uuid (:uuid (get-room this {:name room_name})))))]
+                   (contains? sql-user :room_name)
+                   (->
+                    (dissoc :room_name)
+                    (assoc :room_uuid (:uuid (get-room this {:name room_name})))))]
     (cond
       uuid (sql/update! this :user sql-user ["uuid = ?" uuid])
       name (sql/update! this :user sql-user ["name = ?" name]))
@@ -135,16 +135,16 @@
 
 (defn insert-message! [this {:keys [uuid nanos] :as message}]
   (let [sql-message (cond-> (rename-keys message message-domain->sql-keys)
-                            (nil? uuid)
-                            (assoc :uuid (random-uuid))
-                            (nil? nanos)
-                            (assoc :nanos (System/nanoTime)))
+                      (nil? uuid)
+                      (assoc :uuid (random-uuid))
+                      (nil? nanos)
+                      (assoc :nanos (System/nanoTime)))
         {:keys [room_name room_uuid username user_uuid] :as sql-message} sql-message
         sql-message (cond-> sql-message
-                            (and room_name (nil? room_uuid))
-                            (assoc :room_uuid (:uuid (get-room this {:name room_name})))
-                            (and username (nil? user_uuid))
-                            (assoc :user_uuid (:uuid (get-user this {:name username}))))]
+                      (and room_name (nil? room_uuid))
+                      (assoc :room_uuid (:uuid (get-room this {:name room_name})))
+                      (and username (nil? user_uuid))
+                      (assoc :user_uuid (:uuid (get-user this {:name username}))))]
     (sql/insert! this :message (select-keys sql-message [:uuid :message :room_uuid :user_uuid :nanos]))
     (get-message this sql-message)))
 
@@ -167,10 +167,10 @@
 
 (defn insert-outbox-event! [this {:keys [uuid nanos] :as evt}]
   (let [{:keys [uuid nanos] :as sql-message} (cond-> evt
-                                                     (nil? uuid)
-                                                     (assoc :uuid (random-uuid))
-                                                     (nil? nanos)
-                                                     (assoc :nanos (System/nanoTime)))]
+                                               (nil? uuid)
+                                               (assoc :uuid (random-uuid))
+                                               (nil? nanos)
+                                               (assoc :nanos (System/nanoTime)))]
     (sql/insert! this :outbox {:uuid  uuid
                                :nanos nanos
                                :event sql-message})
@@ -195,8 +195,8 @@
 
 (defn users-in-room [this room-name]
   (let [sql (assoc select-user-sql
-              :join [:room [:= :user.room_uuid :room.uuid]]
-              :where [:= :room.name room-name])]
+                   :join [:room [:= :user.room_uuid :room.uuid]]
+                   :where [:= :room.name room-name])]
     (->> (sql/query this (hsql/format sql))
          (map #(:username (rename-keys % user-sql->domain-keys))))))
 

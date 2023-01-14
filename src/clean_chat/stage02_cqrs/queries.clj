@@ -1,6 +1,6 @@
 (ns clean-chat.stage02-cqrs.queries
   (:require
-    [datascript.core :as d]))
+   [datascript.core :as d]))
 
 (def all-rooms-query
   '[:find [?room-name ...]
@@ -31,13 +31,13 @@
 
 (defn clients-in-room [db room-name]
   (d/q
-    '[:find [?ws ...]
-      :in $ ?room-name
-      :where
-      [?room :room-name ?room-name]
-      [?client :room ?room]
-      [?client :ws ?ws]]
-    db room-name))
+   '[:find [?ws ...]
+     :in $ ?room-name
+     :where
+     [?room :room-name ?room-name]
+     [?client :room ?room]
+     [?client :ws ?ws]]
+   db room-name))
 
 (def username->ws+room-query
   '[:find ?ws ?room-name
@@ -51,9 +51,9 @@
 
 (defn ws+room-name [db username]
   (first
-    (d/q
-      username->ws+room-query
-      db username)))
+   (d/q
+    username->ws+room-query
+    db username)))
 
 (defn current-room-name [db username]
   (some-> db (d/entity [:username username]) :room :room-name))
@@ -66,15 +66,15 @@
 
 (defn chat-history [db room-name]
   (->> (d/q
-         '[:find ?username ?message ?t
-           :keys username message t
-           :in $ ?room-name
-           :where
-           [?r :room-name ?room-name]
-           [?m :room ?r]
-           [?m :user ?u]
-           [?u :username ?username]
-           [?m :message ?message]
-           [?m :nanos-since-unix-epoch ?t]]
-         db room-name)
+        '[:find ?username ?message ?t
+          :keys username message t
+          :in $ ?room-name
+          :where
+          [?r :room-name ?room-name]
+          [?m :room ?r]
+          [?m :user ?u]
+          [?u :username ?username]
+          [?m :message ?message]
+          [?m :nanos-since-unix-epoch ?t]]
+        db room-name)
        (sort-by :t)))

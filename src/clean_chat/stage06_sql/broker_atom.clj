@@ -22,9 +22,9 @@
     (swap! conn plan-and-execute command)
     (catch Exception e
       (log/warnf
-        "Command rejected! (%s)\n%s"
-        (.getMessage e)
-        (with-out-str (pp/pprint command))))))
+       "Command rejected! (%s)\n%s"
+       (.getMessage e)
+       (with-out-str (pp/pprint command))))))
 
 (defn handle-events [{:keys [clients conn]}]
   (let [cbt (client-api/clients-by-transform clients)

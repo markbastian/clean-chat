@@ -42,6 +42,4 @@
   (require '[clean-chat.stage01-unclean.domain :as domain])
   (require '[datascript.core :as d])
   (let [conn (::ds/conn (system/system))]
-    (d/q domain/all-active-users-query @conn))
-
-  )
+    (d/q domain/all-active-users-query @conn)))

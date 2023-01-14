@@ -13,42 +13,42 @@
   (let [conn (get (system/system) chat-state-key)
         clients (get (system/system) client-state-key)]
     (commands/dispatch-command
-      {:conn conn :clients clients}
-      {:command   :change-room
-       :username  "Mark"
-       :room-name "froob"}))
+     {:conn conn :clients clients}
+     {:command   :change-room
+      :username  "Mark"
+      :room-name "froob"}))
 
   (let [conn (get (system/system) chat-state-key)
         clients (get (system/system) client-state-key)]
     (commands/dispatch-command
-      {:conn conn :clients clients}
-      {:command      :chat-message
-       :username     "Mark"
-       :chat-message "What's going on?"}))
+     {:conn conn :clients clients}
+     {:command      :chat-message
+      :username     "Mark"
+      :chat-message "What's going on?"}))
 
   (let [conn (get (system/system) chat-state-key)
         clients (get (system/system) client-state-key)]
     (commands/dispatch-command
-      {:conn conn :clients clients}
-      {:command   :rename-room
-       :username  "Mark"
-       :room-name "bazwonk"}))
+     {:conn conn :clients clients}
+     {:command   :rename-room
+      :username  "Mark"
+      :room-name "bazwonk"}))
 
   (let [conn (get (system/system) chat-state-key)
         clients (get (system/system) client-state-key)]
     (commands/dispatch-command
-      {:conn conn :clients clients}
-      {:command   :change-room
-       :username  "Mark"
-       :room-name "public"}))
+     {:conn conn :clients clients}
+     {:command   :change-room
+      :username  "Mark"
+      :room-name "public"}))
 
   (let [conn (get (system/system) chat-state-key)
         clients (get (system/system) client-state-key)]
     (commands/dispatch-command
-      {:conn conn :clients clients}
-      {:command   :change-room
-       :username  "Mark"
-       :room-name "public"}))
+     {:conn conn :clients clients}
+     {:command   :change-room
+      :username  "Mark"
+      :room-name "public"}))
 
   (let [conn (get (system/system) chat-state-key)
         clients (get (system/system) client-state-key)]
