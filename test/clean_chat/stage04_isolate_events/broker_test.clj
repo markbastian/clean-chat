@@ -1,6 +1,10 @@
 (ns clean-chat.stage04-isolate-events.broker-test
-  (:require [clojure.test :refer :all])
-  (:require [clojure.test :refer :all]))
+  (:require
+   [clean-chat.stage04-isolate-events.broker :as broker]
+   [clean-chat.stage04-isolate-events.client-api :as client-api]
+   [clean-chat.stage04-isolate-events.system :as config]
+   [clojure.test :refer [deftest is testing]]
+   [datascript.core :as d]))
 
 (deftest join-chat-broker-test
   (testing "Correct broker behavior when joining chat"

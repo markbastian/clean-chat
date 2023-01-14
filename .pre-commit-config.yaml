@@ -13,3 +13,7 @@ repos:
     rev: v0.9.1
     hooks:
       - id: cljfmt-docker
+  - repo: https://github.com/clj-kondo/clj-kondo
+    rev: v2023.01.12
+    hooks:
+      - id: clj-kondo-docker
