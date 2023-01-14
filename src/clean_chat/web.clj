@@ -1,15 +1,14 @@
 (ns clean-chat.web
-  (:require
-    [clean-chat.pages :as chat-pages]
-    [clojure.pprint :as pp]
-    [reitit.ring :as ring]
-    [reitit.ring.middleware.muuntaja :as muuntaja]
-    [reitit.ring.coercion :as coercion]
-    [reitit.ring.middleware.parameters :as parameters]
-    [ring.adapter.jetty9 :as jetty]
-    [ring.util.http-response :refer [ok internal-server-error not-found]]
-    [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
-    [ring.middleware.json :refer [wrap-json-response]]))
+  (:require [clean-chat.pages :as chat-pages]
+            [clojure.pprint :as pp]
+            [reitit.ring :as ring]
+            [reitit.ring.coercion :as coercion]
+            [reitit.ring.middleware.muuntaja :as muuntaja]
+            [reitit.ring.middleware.parameters :as parameters]
+            [ring.adapter.jetty9 :as jetty]
+            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
+            [ring.middleware.json :refer [wrap-json-response]]
+            [ring.util.http-response :refer [ok internal-server-error not-found]]))
 
 (defn ws-upgrade-handler [{:keys [ws-handlers] :as context} upgrade-request]
   (let [{:keys [on-connect on-text on-bytes on-close on-ping on-pong on-error]} ws-handlers

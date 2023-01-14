@@ -1,7 +1,7 @@
 (ns clean-chat.stage04-isolate-notifications.test-notifications
-  (:require [clojure.test :refer :all]
+  (:require [clean-chat.stage04-isolate-notifications.client-api :as client-api]
             [clean-chat.stage04-isolate-notifications.events :as events]
-            [clean-chat.stage04-isolate-notifications.client-api :as client-api]))
+            [clojure.test :refer :all]))
 
 (defn echo-message [{:keys [clients]} event]
   (doseq [client (client-api/all-clients clients)]

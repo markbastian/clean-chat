@@ -1,12 +1,6 @@
 (ns clean-chat.stage04-isolate-notifications.events-test
   (:require [clojure.test :refer :all])
-  (:require
-    [clean-chat.stage04-isolate-notifications.test-client-api]
-    [clean-chat.stage04-isolate-notifications.system :as config]
-    [clean-chat.stage04-isolate-notifications.commands :as commands]
-    [clean-chat.stage04-isolate-notifications.test-notifications]
-    [clean-chat.stage04-isolate-notifications.events :refer :all]
-    [datascript.core :as d]))
+  (:require [clojure.test :refer :all]))
 
 (deftest join-chat-commands-test
   (testing "Correct commands behavior when joining chat"

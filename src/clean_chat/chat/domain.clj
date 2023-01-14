@@ -1,8 +1,7 @@
 (ns clean-chat.chat.domain
-  (:require
-    [clean-chat.chat.queries :as chat-queries]
-    [clean-chat.chat.htmx-notifications :as htmx-events]
-    [datascript.core :as d]))
+  (:require [clean-chat.chat.htmx-notifications :as htmx-events]
+            [clean-chat.chat.queries :as chat-queries]
+            [datascript.core :as d]))
 
 ;; These are the real actions that can occur.
 ;; Consider -- Do all things with a user or clients arg need to be downstream

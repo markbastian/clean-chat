@@ -1,9 +1,8 @@
 (ns clean-chat.stage02-cqrs.domain
-  (:require
-    [clean-chat.stage02-cqrs.queries :as queries]
-    [clojure.tools.logging :as log]
-    [datascript.core :as d]
-    [clean-chat.stage02-cqrs.htmx-notifications :as htmx-notifications]))
+  (:require [clean-chat.stage02-cqrs.htmx-notifications :as htmx-notifications]
+            [clean-chat.stage02-cqrs.queries :as queries]
+            [clojure.tools.logging :as log]
+            [datascript.core :as d]))
 
 (defn create-chat-message! [{:keys [conn]} username message]
   (let [room-name (queries/current-room-name @conn username)]

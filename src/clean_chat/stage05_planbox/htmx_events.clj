@@ -1,10 +1,9 @@
 (ns clean-chat.stage05-planbox.htmx-events
-  (:require
-    [clean-chat.stage05-planbox.client-api :as client-api]
-    [clean-chat.stage05-planbox.planex-api :as planex-api]
-    [clean-chat.stage05-planbox.htmx-notifications :as htmx-notifications]
-    [clean-chat.stage05-planbox.queries :as queries]
-    [clojure.tools.logging :as log]))
+  (:require [clean-chat.stage05-planbox.client-api :as client-api]
+            [clean-chat.stage05-planbox.htmx-notifications :as htmx-notifications]
+            [clean-chat.stage05-planbox.planex-api :as planex-api]
+            [clean-chat.stage05-planbox.queries :as queries]
+            [clojure.tools.logging :as log]))
 
 (defmethod planex-api/dispatch-event [:htmx :join-chat]
   [{:keys [clients db]} {:keys [username]}]

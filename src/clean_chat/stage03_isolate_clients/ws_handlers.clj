@@ -1,7 +1,7 @@
 (ns clean-chat.stage03-isolate-clients.ws-handlers
-  (:require [clean-chat.stage03-isolate-clients.client-api :as client-api]
+  (:require [clean-chat.pages :as chat-pages]
+            [clean-chat.stage03-isolate-clients.client-api :as client-api]
             [clean-chat.stage03-isolate-clients.commands :as commands]
-            [clean-chat.pages :as chat-pages]
             [clean-chat.utils :as u]
             [clojure.tools.logging :as log]
             [hiccup.page :refer [html5]]

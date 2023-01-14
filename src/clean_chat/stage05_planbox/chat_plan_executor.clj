@@ -1,8 +1,7 @@
 (ns clean-chat.stage05-planbox.chat-plan-executor
-  (:require
-    [clean-chat.stage05-planbox.queries :as queries]
-    [clean-chat.stage05-planbox.planex-api :as planex-api]
-    [datascript.core :as d]))
+  (:require [clean-chat.stage05-planbox.planex-api :as planex-api]
+            [clean-chat.stage05-planbox.queries :as queries]
+            [datascript.core :as d]))
 
 (defmethod planex-api/execute-plan! :create-message
   [state {:keys [message username room-name]}]

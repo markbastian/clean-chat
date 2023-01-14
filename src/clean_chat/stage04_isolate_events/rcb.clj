@@ -1,12 +1,11 @@
 (ns clean-chat.stage04-isolate-events.rcb
-  (:require
-    [clean-chat.stage04-isolate-events.system :as config]
-    [clean-chat.stage04-isolate-events.commands :as commands]
-    [clean-chat.stage04-isolate-events.queries :as queries]
-    [clean-chat.stage04-isolate-events.htmx-notifications :as htmx-notifications]
-    [clean-chat.system :as system]
-    [datascript.core :as d]
-    [parts.datascript.core.core :as ds]))
+  (:require [clean-chat.stage04-isolate-events.commands :as commands]
+            [clean-chat.stage04-isolate-events.htmx-notifications :as htmx-notifications]
+            [clean-chat.stage04-isolate-events.queries :as queries]
+            [clean-chat.stage04-isolate-events.system :as config]
+            [clean-chat.system :as system]
+            [datascript.core :as d]
+            [parts.datascript.core.core :as ds]))
 
 (def chat-state-key [::config/chat-state ::ds/conn])
 (def client-state-key [::config/clients-state ::ds/conn])

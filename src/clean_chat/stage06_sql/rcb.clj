@@ -1,10 +1,10 @@
 (ns clean-chat.stage06-sql.rcb
-  (:require [clean-chat.system :as system]
+  (:require [clean-chat.stage06-sql.chat-impl-sqlite]
+            [clean-chat.stage06-sql.planex-api :as planex-api]
+            [clean-chat.stage06-sql.queries-sql :as sql-queries]
+            [clean-chat.system :as system]
             [next.jdbc :as jdbc]
-            [next.jdbc.sql :as sql]
-            [clean-chat.stage06-sql.chat-impl-sqlite]
-            [clean-chat.stage06-sql.sql-queries :as sql-queries]
-            [clean-chat.stage06-sql.planex-api :as planex-api]))
+            [next.jdbc.sql :as sql]))
 
 (comment
   (let [ds (:parts.next.jdbc.core/datasource (system/system))]

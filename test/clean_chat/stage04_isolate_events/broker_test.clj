@@ -1,12 +1,7 @@
-(ns clean-chat.stage04-isolate-notifications.broker-test(:require [clojure.test :refer :all])
-  (:require
-    [clean-chat.stage04-isolate-notifications.client-api :as client-api]
-    [clean-chat.stage04-isolate-notifications.test-client-api]
-    [clean-chat.stage04-isolate-notifications.system :as config]
-    [clean-chat.stage04-isolate-notifications.broker :as broker]
-    [clean-chat.stage04-isolate-notifications.test-notifications]
-    [clean-chat.stage04-isolate-notifications.events :refer :all]
-    [datascript.core :as d]))
+(ns clean-chat.stage04-isolate-notifications.broker-test
+  (:require [clojure.test :refer :all])
+  (:require [clojure.test :refer :all]))
+
 (deftest join-chat-broker-test
   (testing "Correct broker behavior when joining chat"
     (let [clients (atom {})

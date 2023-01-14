@@ -1,8 +1,8 @@
 (ns clean-chat.stage02-cqrs.htmx-notifications
   (:require [clean-chat.pages :as chat-pages]
             [clean-chat.stage02-cqrs.queries :as queries]
-            [ring.adapter.jetty9 :as jetty]
-            [hiccup.page :refer [html5]]))
+            [hiccup.page :refer [html5]]
+            [ring.adapter.jetty9 :as jetty]))
 
 (defn notify-and-close-login-failure [title ws]
   (jetty/send! ws (html5 (chat-pages/show-chat-login title {:hx-swap-oob "true"})))

@@ -1,10 +1,9 @@
 (ns clean-chat.system
-  (:require
-    [clojure.tools.logging :as log]
-    [datascript.core :as d]
-    [parts.ring.adapter.jetty9.core :as jetty9]
-    [integrant.core :as ig]
-    [clean-chat.web :as web]))
+  (:require [clean-chat.web :as web]
+            [clojure.tools.logging :as log]
+            [datascript.core :as d]
+            [integrant.core :as ig]
+            [parts.ring.adapter.jetty9.core :as jetty9]))
 
 ;;https://github.com/markbastian/conj2019/blob/master/src/main/clj/conj2019/full_demo/web/v0.clj
 ;; https://arhamjain.com/2021/11/22/nim-simple-chat.html

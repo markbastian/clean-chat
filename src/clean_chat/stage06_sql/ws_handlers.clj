@@ -1,8 +1,10 @@
 (ns clean-chat.stage06-sql.ws-handlers
-  (:require [clean-chat.stage06-sql.client-manager :as client-api]
-            [clean-chat.stage06-sql.tx-broker :as broker]
-            [clean-chat.pages :as chat-pages]
+  (:require [clean-chat.pages :as chat-pages]
+            [clean-chat.stage06-sql.client-manager :as client-api]
+    ;[clean-chat.stage06-sql.broker-sql :as broker-sql]
+            [clean-chat.stage06-sql.broker-ref :as broker-ref]
             [clean-chat.utils :as u]
+            [clojure.pprint :as pp]
             [clojure.tools.logging :as log]
             [hiccup.page :refer [html5]]
             [ring.adapter.jetty9 :as jetty]))
@@ -19,7 +21,7 @@
                                                 :transport :ws
                                                 :ws        ws
                                                 :transform :htmx})
-        (broker/process-command
+        (broker-ref/process-command
           (-> context
               (dissoc :client-manager)
               (assoc :clients @client-manager))
@@ -36,7 +38,7 @@
                       :username username
                       :command (some-> HEADERS :HX-Trigger-Name keyword))
                     (dissoc :HEADERS))]
-    (broker/process-command
+    (broker-ref/process-command
       (-> context
           (dissoc :client-manager)
           (assoc :clients @client-manager))
@@ -47,7 +49,7 @@
     (log/debugf "on-close triggered for user: %s" username)
     (client-api/remove-client! client-manager username)
     (let [command {:command :leave-chat :username username}]
-      (broker/process-command
+      (broker-ref/process-command
         (-> context
             (dissoc :client-manager)
             (assoc :clients @client-manager))
@@ -58,7 +60,7 @@
     (log/debugf "on-error triggered for user: %s" username)
     (client-api/remove-client! client-manager username)
     (let [command {:command :leave-chat :username username}]
-      (broker/process-command
+      (broker-ref/process-command
         (-> context
             (dissoc :client-manager)
             (assoc :clients @client-manager))

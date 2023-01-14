@@ -1,13 +1,13 @@
 (ns clean-chat.stage06-sql.chat-api)
 
 (defprotocol IChatEvents
-  (create-message [this event])
-  (join-chat [this event])
-  (leave-chat [this event])
-  (create-room [this event])
-  (enter-room [this event])
-  (leave-room [this event])
-  (rename-room [this event]))
+  (create-message! [this event])
+  (join-chat! [this event])
+  (leave-chat! [this event])
+  (create-room! [this event])
+  (enter-room! [this event])
+  (leave-room! [this event])
+  (rename-room! [this event]))
 
 (defprotocol IChatQueries
   (occupied-rooms [this])

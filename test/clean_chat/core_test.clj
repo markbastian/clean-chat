@@ -1,6 +1,6 @@
 (ns clean-chat.core-test
-  (:require [clojure.test :refer :all]
-            [clean-chat.core :refer :all]))
+  (:require [clean-chat.core :refer :all]
+            [clojure.test :refer :all]))
 
 (deftest a-test
   (testing "I pass."

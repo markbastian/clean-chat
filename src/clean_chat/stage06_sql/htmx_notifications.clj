@@ -20,6 +20,7 @@
   (notify-update-room-change-link client room-name))
 
 (defn notify-update-room-list [context client]
+
   (let [data (chat-api/occupied-rooms context)
         html (html5 (chat-pages/sidebar-room-names data))]
     (client-api/send! client html)))

@@ -1,9 +1,8 @@
 (ns parts.ring.adapter.jetty9.core
-  (:require
-    [clojure.tools.logging :as log]
-    [ring.adapter.jetty9 :as jetty9]
-    [integrant.core :as ig]
-    [clean-chat.middleware :refer [wrap-component]])
+  (:require [clean-chat.middleware :refer [wrap-component]]
+            [clojure.tools.logging :as log]
+            [integrant.core :as ig]
+            [ring.adapter.jetty9 :as jetty9])
   (:import [org.eclipse.jetty.server Server]))
 
 (defmethod ig/init-key ::server [_ {:keys [handler] :as m}]

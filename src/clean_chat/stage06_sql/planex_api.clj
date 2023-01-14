@@ -2,6 +2,12 @@
   (:require [clojure.pprint :as pp]
             [clojure.tools.logging :as log]))
 
+(defprotocol IOutbox
+  (outbox-write! [this event])
+  (outbox-read [this])
+  (outbox-get [this event])
+  (outbox-delete! [this event]))
+
 (defmulti generate-plan (fn [_ctx {:keys [command]}] command))
 
 (defmethod generate-plan :default [_ {:keys [command] :as cmd}]
@@ -21,8 +27,10 @@
                                     {:keys [event]}]
   (log/warnf "Unhandled dispatch value: [%s %s]" transform event))
 
-(defprotocol IOutbox
-  (outbox-write! [this event])
-  (outbox-read [this])
-  (outbox-get [this event])
-  (outbox-delete! [this event]))
+(defn execute-events! [ctx events]
+  (doseq [event events]
+    (execute-plan! ctx event)
+    (outbox-write! ctx event)))
+
+
+

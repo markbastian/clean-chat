@@ -1,18 +1,17 @@
-(ns clean-chat.stage06-sql.tx-broker
-  (:require
-    [clean-chat.stage06-sql.client-manager :as client-api]
-    [clean-chat.stage06-sql.planex-api :as planex-api]
-    [clean-chat.stage06-sql.chat-command-planner]
-    [clean-chat.stage06-sql.chat-plan-executor]
-    [clean-chat.stage06-sql.htmx-events]
-    [next.jdbc :as jdbc]))
+(ns clean-chat.stage06-sql.broker-sql
+  (:require [clean-chat.stage06-sql.chat-command-planner]
+            [clean-chat.stage06-sql.chat-plan-executor]
+            [clean-chat.stage06-sql.client-manager :as client-api]
+            [clean-chat.stage06-sql.htmx-events]
+            [clean-chat.stage06-sql.planex-api :as planex-api]
+            [next.jdbc :as jdbc]))
 
 (defn plan-and-execute! [{:keys [conn]} command]
   (jdbc/with-transaction [tx (:db conn)]
-    (let [planned-events (planex-api/generate-plan conn command)]
+    (let [txconn ((assoc conn :db tx))
+          planned-events (planex-api/generate-plan txconn command)]
       (doseq [event planned-events]
-        (planex-api/execute-plan! conn event)
-        (planex-api/outbox-write! conn event)))))
+        (planex-api/execute-plan! txconn event)))))
 
 (defn handle-events [{:keys [clients conn]}]
   (let [cbt (client-api/clients-by-transform clients)

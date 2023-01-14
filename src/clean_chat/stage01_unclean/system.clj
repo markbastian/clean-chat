@@ -1,14 +1,13 @@
 (ns clean-chat.stage01-unclean.system
-  (:require
-    [clean-chat.stage01-unclean.domain :as domain]
-    [clean-chat.web :as web]
-    [datascript.core :as d]
-    [integrant.core :as ig]
-    [parts.datascript.core.core :as ds]
-    [parts.ring.adapter.jetty9.core :as jetty9]
-    [parts.ws-handler :as ws]
-    [clean-chat.system :as system]
-    [clean-chat.stage01-unclean.ws-handlers :as ws-handlers]))
+  (:require [clean-chat.stage01-unclean.domain :as domain]
+            [clean-chat.stage01-unclean.ws-handlers :as ws-handlers]
+            [clean-chat.system :as system]
+            [clean-chat.web :as web]
+            [datascript.core :as d]
+            [integrant.core :as ig]
+            [parts.datascript.core.core :as ds]
+            [parts.ring.adapter.jetty9.core :as jetty9]
+            [parts.ws-handler :as ws]))
 
 (def chat-schema
   {:username  {:db/unique :db.unique/identity}

@@ -1,9 +1,8 @@
-(ns clean-chat.stage06-sql.sql-queries
-  (:require
-    [clojure.edn :as edn]
-    [honey.sql :as hsql]
-    [next.jdbc.sql :as sql]
-    [clojure.set :refer [rename-keys]]))
+(ns clean-chat.stage06-sql.queries-sql
+  (:require [clojure.edn :as edn]
+            [clojure.set :refer [rename-keys]]
+            [honey.sql :as hsql]
+            [next.jdbc.sql :as sql]))
 
 (def room-domain->sql-keys {:room-name :name})
 (def room-sql->domain-keys {:name      :room-name

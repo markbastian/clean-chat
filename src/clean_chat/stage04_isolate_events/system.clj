@@ -1,15 +1,14 @@
 (ns clean-chat.stage04-isolate-events.system
-  (:require
-    [clean-chat.stage04-isolate-events.client-api :as client-api]
-    [clean-chat.web :as web]
-    [clojure.tools.logging :as log]
-    [datascript.core :as d]
-    [integrant.core :as ig]
-    [parts.datascript.core.core :as ds]
-    [parts.ring.adapter.jetty9.core :as jetty9]
-    [parts.ws-handler :as ws]
-    [clean-chat.system :as system]
-    [clean-chat.stage04-isolate-events.ws-handlers :as ws-handlers]))
+  (:require [clean-chat.stage04-isolate-events.client-api :as client-api]
+            [clean-chat.stage04-isolate-events.ws-handlers :as ws-handlers]
+            [clean-chat.system :as system]
+            [clean-chat.web :as web]
+            [clojure.tools.logging :as log]
+            [datascript.core :as d]
+            [integrant.core :as ig]
+            [parts.datascript.core.core :as ds]
+            [parts.ring.adapter.jetty9.core :as jetty9]
+            [parts.ws-handler :as ws]))
 
 (def chat-schema
   {:username  {:db/unique :db.unique/identity}

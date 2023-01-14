@@ -1,16 +1,15 @@
 (ns clean-chat.chat.routes
-  (:require
-    [clean-chat.pages :as chat-pages]
-    [clean-chat.chat.commands]
-    [clean-chat.chat.events]
-    [sca.api.client :as client-api]
-    [sca.api.lifecycle :as lifecycle-api]
-    [clean-chat.utils :as u]
-    [clojure.tools.logging :as log]
-    [ring.adapter.jetty9 :as jetty]
-    [ring.util.http-response :refer [ok internal-server-error]]
-    [clean-chat.ws-handlers :as ws-handlers]
-    [hiccup.page :refer [html5]]))
+  (:require [clean-chat.chat.commands]
+            [clean-chat.chat.events]
+            [clean-chat.pages :as chat-pages]
+            [clean-chat.utils :as u]
+            [clean-chat.ws-handlers :as ws-handlers]
+            [clojure.tools.logging :as log]
+            [hiccup.page :refer [html5]]
+            [ring.adapter.jetty9 :as jetty]
+            [ring.util.http-response :refer [ok internal-server-error]]
+            [sca.api.client :as client-api]
+            [sca.api.lifecycle :as lifecycle-api]))
 
 (defn on-connect [{:keys [title clients path-params] :as context} ws]
   (let [{:keys [username room-name]} path-params]

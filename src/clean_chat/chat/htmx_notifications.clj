@@ -1,9 +1,8 @@
 (ns clean-chat.chat.htmx-notifications
-  (:require
-    [clean-chat.pages :as chat-pages]
-    [clean-chat.chat.queries :as chat-queries]
-    [sca.api.client :as client-api]
-    [hiccup.page :refer [html5]]))
+  (:require [clean-chat.chat.queries :as chat-queries]
+            [clean-chat.pages :as chat-pages]
+            [hiccup.page :refer [html5]]
+            [sca.api.client :as client-api]))
 
 (defn all-usernames-html [db]
   (->> (chat-queries/usernames db)

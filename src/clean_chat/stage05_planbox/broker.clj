@@ -1,12 +1,11 @@
 (ns clean-chat.stage05-planbox.broker
-  (:require
-    [clean-chat.stage05-planbox.client-api :as client-api]
-    [clean-chat.stage05-planbox.planex-api :as planex-api]
-    [clean-chat.stage05-planbox.chat-command-planner]
-    [clean-chat.stage05-planbox.chat-plan-executor]
-    [clean-chat.stage05-planbox.htmx-events]
-    [clojure.pprint :as pp]
-    [clojure.tools.logging :as log]))
+  (:require [clean-chat.stage05-planbox.chat-command-planner]
+            [clean-chat.stage05-planbox.chat-plan-executor]
+            [clean-chat.stage05-planbox.client-api :as client-api]
+            [clean-chat.stage05-planbox.htmx-events]
+            [clean-chat.stage05-planbox.planex-api :as planex-api]
+            [clojure.pprint :as pp]
+            [clojure.tools.logging :as log]))
 
 (defn plan-and-execute [state command]
   (let [planned-events (planex-api/generate-plan state command)]

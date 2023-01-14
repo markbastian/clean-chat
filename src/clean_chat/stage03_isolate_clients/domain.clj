@@ -1,9 +1,8 @@
 (ns clean-chat.stage03-isolate-clients.domain
-  (:require
-    [clean-chat.stage03-isolate-clients.client-api :as client-api]
-    [clean-chat.stage03-isolate-clients.queries :as queries]
-    [datascript.core :as d]
-    [clean-chat.stage03-isolate-clients.htmx-notifications :as htmx-notifications]))
+  (:require [clean-chat.stage03-isolate-clients.client-api :as client-api]
+            [clean-chat.stage03-isolate-clients.htmx-notifications :as htmx-notifications]
+            [clean-chat.stage03-isolate-clients.queries :as queries]
+            [datascript.core :as d]))
 
 (defn create-chat-message! [{:keys [clients conn]} username message]
   ;;Business logic

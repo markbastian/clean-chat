@@ -1,7 +1,7 @@
 (ns clean-chat.stage05-planbox.ws-handlers
-  (:require [clean-chat.stage05-planbox.client-api :as client-api]
+  (:require [clean-chat.pages :as chat-pages]
             [clean-chat.stage05-planbox.broker :as broker]
-            [clean-chat.pages :as chat-pages]
+            [clean-chat.stage05-planbox.client-api :as client-api]
             [clean-chat.utils :as u]
             [clojure.tools.logging :as log]
             [hiccup.page :refer [html5]]

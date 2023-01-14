@@ -1,7 +1,7 @@
 (ns clean-chat.stage04-isolate-events.ws-handlers
-  (:require [clean-chat.stage04-isolate-events.client-api :as client-api]
+  (:require [clean-chat.pages :as chat-pages]
             [clean-chat.stage04-isolate-events.broker :as broker]
-            [clean-chat.pages :as chat-pages]
+            [clean-chat.stage04-isolate-events.client-api :as client-api]
             [clean-chat.utils :as u]
             [clojure.tools.logging :as log]
             [hiccup.page :refer [html5]]
