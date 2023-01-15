@@ -1,8 +1,6 @@
 (ns clean-chat.stage03-isolate-clients.system
   (:require [clean-chat.stage03-isolate-clients.ws-handlers :as ws-handlers]
-            [clean-chat.system :as system]
             [clean-chat.web :as web]
-            [datascript.core :as d]
             [integrant.core :as ig]
             [parts.datascript.core.core :as ds]
             [parts.ring.adapter.jetty9.core :as jetty9]
@@ -37,6 +35,7 @@
                                 :handler          #'web/handler}})
 
 (comment
+  (require '[clean-chat.system :as system])
   (system/start config)
   (system/stop)
   (system/restart config)

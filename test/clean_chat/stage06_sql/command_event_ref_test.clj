@@ -1,9 +1,8 @@
 (ns clean-chat.stage06-sql.command-event-ref-test
-  (:require [clojure.test :refer :all])
   (:require [clean-chat.stage06-sql.chat-impl-ref :as cir]
             [clean-chat.stage06-sql.planex-api :as planex-api]
             [clean-chat.stage06-sql.queries-datascript :as queries]
-            [clean-chat.stage06-sql.chat-impl-ref]
+            [clojure.test :refer [deftest is testing]]
             [datascript.core :as d]))
 
 (def join-room-event-keys [:event :username :room-name])

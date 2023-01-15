@@ -1,6 +1,9 @@
 (ns clean-chat.stage04-isolate-events.events-test
-  (:require [clojure.test :refer :all])
-  (:require [clojure.test :refer :all]))
+  (:require
+   [clean-chat.stage04-isolate-events.commands :as commands]
+   [clean-chat.stage04-isolate-events.system :as config]
+   [clojure.test :refer [deftest is testing]]
+   [datascript.core :as d]))
 
 (deftest join-chat-commands-test
   (testing "Correct commands behavior when joining chat"

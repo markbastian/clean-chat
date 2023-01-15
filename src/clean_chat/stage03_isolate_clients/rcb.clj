@@ -1,4 +1,5 @@
 (ns clean-chat.stage03-isolate-clients.rcb
+  #_:clj-kondo/ignore
   (:require [clean-chat.stage03-isolate-clients.commands :as commands]
             [clean-chat.stage03-isolate-clients.htmx-notifications :as htmx-notifications]
             [clean-chat.stage03-isolate-clients.queries :as queries]

@@ -33,6 +33,6 @@
 
 (defmethod planex-api/execute-plan! :rename-room
   [{:keys [db] :as state} {:keys [old-room-name new-room-name]}]
-  (let [id (:db/id (queries/room db old-room-name))]
-    (let [tx-data [[:db/add id :room-name new-room-name]]]
-      (update state :db d/db-with tx-data))))
+  (let [id (:db/id (queries/room db old-room-name))
+        tx-data [[:db/add id :room-name new-room-name]]]
+    (update state :db d/db-with tx-data)))

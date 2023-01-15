@@ -1,6 +1,5 @@
 (ns clean-chat.web
   (:require [clean-chat.pages :as chat-pages]
-            [clojure.pprint :as pp]
             [reitit.ring :as ring]
             [reitit.ring.coercion :as coercion]
             [reitit.ring.middleware.muuntaja :as muuntaja]

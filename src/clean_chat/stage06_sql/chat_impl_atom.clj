@@ -28,9 +28,9 @@
   (leave-room! [this {:keys [username]}]
     (update-db this [[:db.fn/retractAttribute [:username username] :room]]))
   (rename-room! [{:keys [db] :as this} {:keys [old-room-name new-room-name]}]
-    (let [id (:db/id (queries/room db old-room-name))]
-      (let [tx-data [[:db/add id :room-name new-room-name]]]
-        (update-db this tx-data))))
+    (let [id (:db/id (queries/room db old-room-name))
+          tx-data [[:db/add id :room-name new-room-name]]]
+      (update-db this tx-data)))
   chat-api/IChatQueries
   (occupied-rooms [{:keys [db]}]
     (queries/occupied-rooms db))

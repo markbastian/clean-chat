@@ -1,4 +1,5 @@
 (ns clean-chat.stage04-isolate-events.rcb
+  #_:clj-kondo/ignore
   (:require [clean-chat.stage04-isolate-events.commands :as commands]
             [clean-chat.stage04-isolate-events.htmx-notifications :as htmx-notifications]
             [clean-chat.stage04-isolate-events.queries :as queries]

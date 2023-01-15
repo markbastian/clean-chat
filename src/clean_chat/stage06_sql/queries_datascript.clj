@@ -84,6 +84,6 @@
   (d/db-with db [[:db.fn/retractAttribute [:username username] :room]]))
 
 (defn rename-room [db {:keys [old-room-name new-room-name]}]
-  (let [id (:db/id (room db old-room-name))]
-    (let [tx-data [[:db/add id :room-name new-room-name]]]
-      (d/db-with db tx-data))))
+  (let [id (:db/id (room db old-room-name))
+        tx-data [[:db/add id :room-name new-room-name]]]
+    (d/db-with db tx-data)))

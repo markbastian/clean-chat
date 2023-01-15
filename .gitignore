@@ -17,3 +17,6 @@ pom.xml.asc
 wordlist.txt
 /lsp
 chat-state
+/.clj-kondo/.cache
+/.clj-kondo/com.github.seancorfield
+/.clj-kondo/metosin

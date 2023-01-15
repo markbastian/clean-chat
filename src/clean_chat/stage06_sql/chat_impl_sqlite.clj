@@ -25,7 +25,7 @@
     (sql-queries/upsert-user! db {:username  username
                                   :room-name nil}))
   (rename-room! [{:keys [db]} {:keys [old-room-name new-room-name]}]
-    (if-some [uuid (:uuid (sql-queries/get-room db {:room-name old-room-name}))]
+    (when-some [uuid (:uuid (sql-queries/get-room db {:room-name old-room-name}))]
       (sql-queries/update-room! db {:uuid uuid :room-name new-room-name})))
   chat-api/IChatQueries
   (occupied-rooms [{:keys [db]}]

@@ -18,7 +18,7 @@
   (htmx-notifications/broadcast-update-active-user-list context clients))
 
 (defmethod planex-api/dispatch-event [:htmx :create-message]
-  [{:keys [clients db] :as context} {:keys [username room-name message]}]
+  [{:keys [clients] :as context} {:keys [username room-name message]}]
   (let [client (client-api/get-client clients username)]
     (htmx-notifications/broadcast-to-room
      context room-name (format "%s: %s" username message))

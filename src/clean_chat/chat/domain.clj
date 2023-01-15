@@ -1,6 +1,5 @@
 (ns clean-chat.chat.domain
-  (:require [clean-chat.chat.htmx-notifications :as htmx-events]
-            [clean-chat.chat.queries :as chat-queries]
+  (:require [clean-chat.chat.queries :as chat-queries]
             [datascript.core :as d]))
 
 ;; These are the real actions that can occur.
@@ -43,11 +42,11 @@
 
 (defn leave-chat [{:keys [conn]} username]
   (let [tx [[:db/retractEntity [:username username]]]
-        {:keys [db-before db-after]} (d/transact! conn tx)]
-    (let [room-name (chat-queries/current-room db-before username)
-          room-removed? (not (chat-queries/room-exists? db-after room-name))]
-      (cond->
-       [{:event :user-left-room :username username :room-name room-name}
-        {:event :user-left-chat :username username :room-name room-name}]
-        room-removed?
-        (conj {:event :room-deleted :room-name room-name})))))
+        {:keys [db-before db-after]} (d/transact! conn tx)
+        room-name (chat-queries/current-room db-before username)
+        room-removed? (not (chat-queries/room-exists? db-after room-name))]
+    (cond->
+     [{:event :user-left-room :username username :room-name room-name}
+      {:event :user-left-chat :username username :room-name room-name}]
+      room-removed?
+      (conj {:event :room-deleted :room-name room-name}))))

@@ -4,7 +4,6 @@
     ;[clean-chat.stage06-sql.broker-sql :as broker-sql]
             [clean-chat.stage06-sql.client-manager :as client-api]
             [clean-chat.utils :as u]
-            [clojure.pprint :as pp]
             [clojure.tools.logging :as log]
             [hiccup.page :refer [html5]]
             [ring.adapter.jetty9 :as jetty]))

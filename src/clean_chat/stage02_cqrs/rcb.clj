@@ -1,4 +1,5 @@
 (ns clean-chat.stage02-cqrs.rcb
+  #_:clj-kondo/ignore
   (:require
    [clean-chat.stage02-cqrs.commands :as commands]
    [clean-chat.stage02-cqrs.queries :as queries]

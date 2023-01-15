@@ -1,4 +1,5 @@
 (ns clean-chat.stage06-sql.rcb
+  #_:clj-kondo/ignore
   (:require [clean-chat.stage06-sql.chat-impl-sqlite]
             [clean-chat.stage06-sql.planex-api :as planex-api]
             [clean-chat.stage06-sql.queries-sql :as sql-queries]

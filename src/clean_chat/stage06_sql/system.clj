@@ -1,14 +1,11 @@
 (ns clean-chat.stage06-sql.system
   (:require
-   [clean-chat.stage06-sql.chat-api :as chat-api]
    [clean-chat.stage06-sql.chat-impl-atom :as cid]
    [clean-chat.stage06-sql.chat-impl-ref :as cir]
    [clean-chat.stage06-sql.chat-impl-sqlite :as cis]
-   [clean-chat.stage06-sql.planex-api :as planex-api]
    [clean-chat.stage06-sql.queries-datascript :as queries]
    [clean-chat.stage06-sql.sql-migrations :as sql-migrations]
    [clean-chat.stage06-sql.ws-handlers :as ws-handlers]
-   [clean-chat.system :as system]
    [clean-chat.web :as web]
    [clojure.tools.logging :as log]
    [datascript.core :as d]
@@ -79,11 +76,13 @@
                              :handler          #'web/handler}})
 
 (comment
+  (require '[clean-chat.system :as system])
   (system/start config)
   (system/stop)
   (system/restart config)
   (system/system)
 
+  (require '[clean-chat.stage06-sql.planex-api :as planex-api])
   (let [r (get (system/system) ::ref-chat)]
     (planex-api/generate-plan r {:command   :join-chat
                                  :username  "Mark"
@@ -92,8 +91,8 @@
   (let [r (get (system/system) ::ref-chat)]
     (dosync
      (chat-api/join-chat! r {:username "Bob"})
-     (chat-api/enter-room! r {:username "Bob"
+     (chat-api/enter-room! r {:username  "Bob"
                               :room-name "public"})
-     (chat-api/create-message! r {:username "Bob"
+     (chat-api/create-message! r {:username  "Bob"
                                   :room-name "public"
                                   :message   "Hi"}))))

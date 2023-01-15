@@ -12,7 +12,7 @@
                                   :ws        ws})
       (domain/notify-and-close-login-failure title ws))))
 
-(defn on-text [{:keys [path-params conn] :as context} _ws text-message]
+(defn on-text [{:keys [path-params] :as context} _ws text-message]
   (let [{:keys [username]} path-params
         {:keys [room-name chat-message] :as json} (u/read-json text-message)
         command (keyword (get-in json [:HEADERS :HX-Trigger-Name]))]

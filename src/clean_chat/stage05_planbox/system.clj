@@ -1,11 +1,9 @@
 (ns clean-chat.stage05-planbox.system
   (:require [clean-chat.stage05-planbox.ws-handlers :as ws-handlers]
-            [clean-chat.system :as system]
             [clean-chat.web :as web]
             [clojure.tools.logging :as log]
             [datascript.core :as d]
             [integrant.core :as ig]
-            [parts.datascript.core.core :as ds]
             [parts.ring.adapter.jetty9.core :as jetty9]
             [parts.ws-handler :as ws]))
 
@@ -40,6 +38,7 @@
                              :handler          #'web/handler}})
 
 (comment
+  (require '[clean-chat.system :as system])
   (system/start config)
   (system/stop)
   (system/restart config))
