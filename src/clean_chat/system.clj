@@ -67,6 +67,13 @@
   ([config] (stop) (start config))
   ([] (restart config)))
 
+(defmacro with-system [[bindings config] & body]
+  `(let [system# (ig/init ~config)
+         ~bindings system#]
+     (try
+       ~@body
+       (finally (ig/halt! system#)))))
+
 (comment
   (start)
   (stop)

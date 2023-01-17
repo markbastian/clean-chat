@@ -1,9 +1,8 @@
 (ns clean-chat.stage06-sql.broker-atom
-  (:require [clean-chat.stage06-sql.chat-command-planner]
-            [clean-chat.stage06-sql.chat-plan-executor]
-            [clean-chat.stage06-sql.client-manager :as client-api]
+  (:require [clean-chat.stage06-sql.client-manager :as client-api]
             [clean-chat.stage06-sql.htmx-events]
             [clean-chat.stage06-sql.planex-api :as planex-api]
+            [clean-chat.stage06-sql.planex-chat]
             [clojure.pprint :as pp]
             [clojure.tools.logging :as log]))
 

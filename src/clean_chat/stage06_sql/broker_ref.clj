@@ -1,9 +1,8 @@
 (ns clean-chat.stage06-sql.broker-ref
-  (:require [clean-chat.stage06-sql.chat-command-planner]
-            [clean-chat.stage06-sql.chat-plan-executor]
-            [clean-chat.stage06-sql.client-manager :as client-api]
+  (:require [clean-chat.stage06-sql.client-manager :as client-api]
             [clean-chat.stage06-sql.htmx-events]
-            [clean-chat.stage06-sql.planex-api :as planex-api]))
+            [clean-chat.stage06-sql.planex-api :as planex-api]
+            [clean-chat.stage06-sql.planex-chat]))
 
 (defn plan-and-execute! [{:keys [conn]} command]
   ;; Needs to be in a protocol or mm as the transaction here may be different
