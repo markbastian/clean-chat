@@ -11,6 +11,10 @@
 (defn update-db [{:keys [ctx]} tx-data]
   (swap! ctx update :db d/db-with tx-data))
 
+;; TODO - FIX
+(defn update-db-fn [{:keys [ctx]} fn & args]
+  (apply swap! ctx update :db d/db-with fn args))
+
 (defn update-outbox [{:keys [ctx]} fn & args]
   (apply swap! ctx update :outbox fn args))
 
@@ -71,9 +75,10 @@
   {::atom-chat {:db     (d/empty-db queries/chat-schema)
                 :outbox []}})
 
-(update-db
- (->DatascriptChat
-  (atom
-   {:db     (d/empty-db queries/chat-schema)
-    :outbox []}))
- [{:abc 123}])
+(comment
+  (update-db
+   (->DatascriptChat
+    (atom
+     {:db     (d/empty-db queries/chat-schema)
+      :outbox []}))
+   [{:abc 123}]))
