@@ -1,5 +1,6 @@
 (ns clean-chat.stage06-sql.command-event-ref-test
-  (:require [clean-chat.stage06-sql.chat-impl-ref :as cir]
+  (:require [clean-chat.stage06-sql.chat-impl-atom :as cid]
+            [clean-chat.stage06-sql.chat-impl-ref :as cir]
             [clean-chat.stage06-sql.chat-impl-sqlite :as cis]
             [clean-chat.stage06-sql.planex-api :as planex-api]
             [clean-chat.stage06-sql.planex-chat]
@@ -64,3 +65,11 @@
      (let [ctx (cir/map->RefChat {:db     (ref (d/empty-db queries/chat-schema))
                                   :outbox (ref [])})]
        (command-lifecycle-test ctx)))))
+
+(deftest atom-command-lifecycle-test
+  (testing "Test the lifecycle of events"
+    (let [ctx (cid/->DatascriptChat
+               (atom
+                {:db     (d/empty-db queries/chat-schema)
+                 :outbox []}))]
+      (command-lifecycle-test ctx))))
