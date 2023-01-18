@@ -6,28 +6,11 @@
    [clean-chat.stage06-sql.queries-datascript :as queries]
    [clean-chat.stage06-sql.ws-handlers :as ws-handlers]
    [clean-chat.web :as web]
-   [clojure.tools.logging :as log]
    [datascript.core :as d]
    [integrant.core :as ig]
    [parts.ring.adapter.jetty9.core :as jetty9]
    [parts.state :as ps]
    [parts.ws-handler :as ws]))
-
-(defmethod ig/init-key ::atom [_ initial-value]
-  (log/debug "Creating atom")
-  (atom initial-value))
-
-(defmethod ig/init-key ::ref [_ initial-value]
-  (log/debug "Creating ref")
-  (ref initial-value))
-
-(defmethod ig/init-key ::ref-chat [_ initial-value]
-  (log/debug "Creating ref-chat")
-  (cir/map->RefChat initial-value))
-
-(defmethod ig/init-key ::sql-chat [_ m]
-  (log/debug "Creating SQL Chat")
-  (cis/map->SqlChat m))
 
 (def config
   (merge
