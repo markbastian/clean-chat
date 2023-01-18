@@ -29,5 +29,8 @@
 
 (defn execute-events! [ctx events]
   (doseq [event events]
+    (log/debugf "\nEXECUTING:\n%s" (with-out-str (pp/pprint event)))
     (execute-plan! ctx event)
-    (outbox-write! ctx event)))
+    (log/debugf "\nOUTBOXING:\n%s" (with-out-str (pp/pprint event)))
+    (outbox-write! ctx event)
+    (log/debug "OUTBOXED")))

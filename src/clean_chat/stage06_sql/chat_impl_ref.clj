@@ -1,7 +1,11 @@
 (ns clean-chat.stage06-sql.chat-impl-ref
   (:require [clean-chat.stage06-sql.chat-api :as chat-api]
             [clean-chat.stage06-sql.planex-api :as planex-api]
-            [clean-chat.stage06-sql.queries-datascript :as queries]))
+            [clean-chat.stage06-sql.queries-datascript :as queries]
+            [clojure.tools.logging :as log]
+            [datascript.core :as d]
+            [integrant.core :as ig]
+            [parts.state :as ps]))
 
 (defrecord RefChat [db outbox])
 
@@ -51,3 +55,13 @@
      this :outbox commute
      (fn [events] (vec (remove (fn [{:keys [uuid]}] (= uuid to-be-removed)) events))))
     (update-outbox this identity)))
+
+(defmethod ig/init-key ::ref-chat [_ initial-value]
+  (log/debug "Creating ref-chat")
+  (map->RefChat initial-value))
+
+(def config
+  {[::db ::ps/ref]     (d/empty-db queries/chat-schema)
+   [::outbox ::ps/ref] []
+   ::ref-chat          {:db     (ig/ref [::db ::ps/ref])
+                        :outbox (ig/ref [::outbox ::ps/ref])}})

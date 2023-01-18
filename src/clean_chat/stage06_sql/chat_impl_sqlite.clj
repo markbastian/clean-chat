@@ -1,7 +1,11 @@
 (ns clean-chat.stage06-sql.chat-impl-sqlite
   (:require [clean-chat.stage06-sql.chat-api :as chat-api]
             [clean-chat.stage06-sql.planex-api :as planex-api]
-            [clean-chat.stage06-sql.queries-sql :as sql-queries]))
+            [clean-chat.stage06-sql.queries-sql :as sql-queries]
+            [clean-chat.stage06-sql.sql-migrations :as sql-migrations]
+            [clojure.tools.logging :as log]
+            [integrant.core :as ig]
+            [parts.next.jdbc.core :as jdbc]))
 
 (defrecord SqlChat [db])
 
@@ -49,3 +53,23 @@
     (sql-queries/get-outbox-event db event))
   (outbox-delete! [{:keys [db]} event]
     (sql-queries/delete-outbox-event! db event)))
+
+(defmethod ig/init-key ::sql-chat [_ m]
+  (log/debug "Creating SQL Chat")
+  (map->SqlChat m))
+
+(def config
+  {::jdbc/datasource {:dbtype       "sqlite"
+                      :dbname       "chat-state"
+                      :foreign_keys "on"}
+   ::jdbc/migrations {:db         (ig/ref ::jdbc/datasource)
+                      :migrations [sql-migrations/create-room-table-sql
+                                   sql-migrations/create-user-table-sql
+                                   sql-migrations/create-message-table-sql
+                                   sql-migrations/create-outbox-table-sql]}
+   ::jdbc/teardown   {:db       (ig/ref ::jdbc/datasource)
+                      :commands [sql-migrations/drop-outbox-table-sql
+                                 sql-migrations/drop-message-table-sql
+                                 sql-migrations/drop-user-table-sql
+                                 sql-migrations/drop-room-table-sql]}
+   ::sql-chat        {:db (ig/ref ::jdbc/datasource)}})
