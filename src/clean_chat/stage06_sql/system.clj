@@ -43,6 +43,10 @@
     r)
 
   (require '[clean-chat.stage06-sql.planex-api :as planex-api])
+  (let [r (get (system/system) ::cid/atom-chat)]
+    r)
+
+  (require '[clean-chat.stage06-sql.planex-api :as planex-api])
   (let [r (get (system/system) ::cir/ref-chat)]
     r)
 

@@ -2,45 +2,36 @@
   (:require [clean-chat.stage06-sql.chat-api :as chat-api]
             [clean-chat.stage06-sql.planex-api :as planex-api]
             [clean-chat.stage06-sql.queries-datascript :as queries]
+            [clojure.pprint :as pp]
             [clojure.tools.logging :as log]
             [datascript.core :as d]
             [integrant.core :as ig]))
 
 (defrecord DatascriptChat [ctx])
 
-(defn update-db [{:keys [ctx]} tx-data]
-  (swap! ctx update :db d/db-with tx-data))
-
-;; TODO - FIX
-(defn update-db-fn [{:keys [ctx]} fn & args]
-  (apply swap! ctx update :db d/db-with fn args))
+(defn update-db [{:keys [ctx]} fn & args]
+  (apply swap! ctx update :db fn args))
 
 (defn update-outbox [{:keys [ctx]} fn & args]
   (apply swap! ctx update :outbox fn args))
 
 (extend-type DatascriptChat
   chat-api/IChatEvents
-  (create-message! [this {:keys [username message room-name]}]
-    (update-db
-     this
-     [{:message message
-       :user    {:username username}
-       :room    {:room-name room-name}}]))
-  (join-chat! [this {:keys [username]}]
-    (update-db this [{:username username}]))
-  (leave-chat! [this {:keys [username]}]
-    (update-db this [[:db.fn/retractAttribute [:username username] :room]]))
+  (create-message! [this message]
+    (pp/pprint [:message message])
+    (update-db this queries/create-message message))
+  (join-chat! [this m]
+    (update-db this queries/join-chat m))
+  (leave-chat! [this m]
+    (update-db this queries/leave-room m))
   (create-room! [this {:keys [room-name]}]
-    (update-db this [{:room-name room-name}]))
-  (enter-room! [this {:keys [username room-name]}]
-    (update-db this [{:username username :room {:room-name room-name}}]))
-  (leave-room! [this {:keys [username]}]
-    (update-db this [[:db.fn/retractAttribute [:username username] :room]]))
-  (rename-room! [{:keys [ctx] :as this} {:keys [old-room-name new-room-name]}]
-    (let [db      (:db @ctx)
-          id      (:db/id (queries/room db old-room-name))
-          tx-data [[:db/add id :room-name new-room-name]]]
-      (update-db this tx-data)))
+    (update-db this queries/insert-room room-name))
+  (enter-room! [this {:keys [_username _room-name] :as m}]
+    (update-db this queries/enter-room m))
+  (leave-room! [this {:keys [_username] :as m}]
+    (update-db this queries/leave-room m))
+  (rename-room! [this {:keys [_old-room-name _new-room-name] :as m}]
+    (update-db this queries/rename-room m))
   chat-api/IChatQueries
   (occupied-rooms [{:keys [ctx]}]
     (queries/occupied-rooms (:db @ctx)))
@@ -49,10 +40,9 @@
   (users-in-room [{:keys [ctx]} room-name]
     (queries/users-in-room (:db @ctx) room-name))
   (current-room-name [{:keys [ctx]} username]
-    (some-> (:db @ctx) (d/entity [:username username]) :room :room-name))
+    (queries/current-room-name (:db @ctx) username))
   (room [{:keys [ctx]} room-name]
-    (d/entity (:db @ctx) [:room-name room-name]))
-  ;; TODO NOTE THIS DOES NOT SEEM TO BE WORKING
+    (queries/room (:db @ctx) room-name))
   (chat-history [{:keys [ctx]} room-name]
     (queries/chat-history (:db @ctx) room-name))
   planex-api/IOutbox
@@ -74,11 +64,3 @@
 (def config
   {::atom-chat {:db     (d/empty-db queries/chat-schema)
                 :outbox []}})
-
-(comment
-  (update-db
-   (->DatascriptChat
-    (atom
-     {:db     (d/empty-db queries/chat-schema)
-      :outbox []}))
-   [{:abc 123}]))

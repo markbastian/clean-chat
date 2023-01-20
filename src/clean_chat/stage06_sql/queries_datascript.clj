@@ -10,6 +10,7 @@
    :room      {:db/valueType   :db.type/ref
                :db/cardinality :db.cardinality/one}})
 
+;; Queries ;;
 (def all-rooms-query
   '[:find [?room-name ...]
     :in $
@@ -55,19 +56,21 @@
           :where
           [?r :room-name ?room-name]
           [?m :room ?r]
+          [?m :nanos ?t]
           [?m :user ?u]
-          [?u :username ?username]
           [?m :message ?message]
-          [?m :nanos ?t]]
+          [?u :username ?username]]
         db room-name)
        (sort-by :t)))
 
-;; Functional commands ;;
-(defn create-message [db {:keys [username message room-name]}]
-  {:pre [username message room-name]}
-  (d/db-with db [{:message message
-                  :user    {:username username}
-                  :room    {:room-name room-name}}]))
+;; Functional events ;;
+(defn create-message [db {:keys [uuid username message room-name nanos] :as m}]
+  {:pre [uuid username message room-name nanos]}
+  (d/db-with db [(-> m
+                     (select-keys [:nanos :uuid :message])
+                     (assoc
+                      :user {:username username}
+                      :room {:room-name room-name}))]))
 
 (defn join-chat [db {:keys [username]}]
   {:pre [username]}
@@ -84,6 +87,6 @@
   (d/db-with db [[:db.fn/retractAttribute [:username username] :room]]))
 
 (defn rename-room [db {:keys [old-room-name new-room-name]}]
-  (let [id (:db/id (room db old-room-name))
+  (let [id      (:db/id (room db old-room-name))
         tx-data [[:db/add id :room-name new-room-name]]]
     (d/db-with db tx-data)))
