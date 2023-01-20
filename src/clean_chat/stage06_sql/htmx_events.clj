@@ -28,6 +28,7 @@
   [context {:keys [username room-name]}]
   (log/debugf "%s is entering %s" username room-name)
   (htmx-notifications/broadcast-enter-room context username room-name))
+
 (defmethod planex-api/dispatch-event [:htmx :leave-room]
   [context {:keys [username room-name]}]
   (log/debugf "%s is leaving %s" username room-name)

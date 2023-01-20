@@ -16,3 +16,12 @@
   (current-room-name [this username])
   (room [this room-name])
   (chat-history [this event]))
+
+(defprotocol IChatNotifications
+  (join-chat [this notification])
+  (leave-chat [this notification])
+  (create-message [this notification])
+  (enter-room [this notification])
+  (leave-room [this notification])
+  (create-room [this notification])
+  (rename-room [this notification]))
