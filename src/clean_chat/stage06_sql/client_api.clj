@@ -1,6 +1,5 @@
-(ns clean-chat.stage06-sql.client-manager
+(ns clean-chat.stage06-sql.client-api
   (:require
-   [clojure.pprint :as pp]
    [clojure.tools.logging :as log]))
 
 (defn get-client [clients client-id]
@@ -35,12 +34,8 @@
     (log/debugf "Removing client: %s" client-id)
     (swap! client-manager remove-client client-id)))
 
-(defmulti send! (fn [{:keys [transport] :as _user} _message] transport))
-
-(defmethod send! :default [_ message]
-  (log/warnf
-   "No client found to send message:\n%s"
-   (with-out-str (pp/pprint message))))
+(defprotocol IClient
+  (send! [this message]))
 
 (defn broadcast! [db client-ids message]
   (doseq [client-id client-ids :let [client (get-client db client-id)] :when client]

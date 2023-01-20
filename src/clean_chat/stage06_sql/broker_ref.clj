@@ -1,5 +1,5 @@
 (ns clean-chat.stage06-sql.broker-ref
-  (:require [clean-chat.stage06-sql.client-manager :as client-api]
+  (:require [clean-chat.stage06-sql.client-api :as client-api]
             [clean-chat.stage06-sql.htmx-events]
             [clean-chat.stage06-sql.planex-api :as planex-api]
             [clean-chat.stage06-sql.planex-chat]

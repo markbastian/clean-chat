@@ -1,8 +1,9 @@
 (ns clean-chat.stage06-sql.ws-handlers
   (:require [clean-chat.pages :as chat-pages]
             [clean-chat.stage06-sql.broker-ref :as broker-ref]
-    ;[clean-chat.stage06-sql.broker-sql :as broker-sql]
-            [clean-chat.stage06-sql.client-manager :as client-api]
+            [clean-chat.stage06-sql.client-api :as client-api]
+   ;[clean-chat.stage06-sql.broker-sql :as broker-sql]
+            [clean-chat.stage06-sql.client-impl-ws :as client-impl-ws]
             [clean-chat.utils :as u]
             [clojure.tools.logging :as log]
             [hiccup.page :refer [html5]]
@@ -15,11 +16,11 @@
 (defn on-connect [{:keys [title path-params client-manager] :as context} ws]
   (let [{:keys [username room-name]} path-params]
     (if-not (client-api/get-client @client-manager username)
-      (do
-        (client-api/add-client! client-manager {:client-id username
-                                                :transport :ws
-                                                :ws        ws
-                                                :transform :htmx})
+      (let [client (client-impl-ws/map->WebSocketClient
+                    {:client-id username
+                     :ws        ws
+                     :transform :htmx})]
+        (client-api/add-client! client-manager client)
         (broker-ref/process-command
          (-> context
              (dissoc :client-manager)

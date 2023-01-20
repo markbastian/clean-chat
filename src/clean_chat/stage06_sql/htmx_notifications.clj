@@ -1,8 +1,7 @@
 (ns clean-chat.stage06-sql.htmx-notifications
   (:require [clean-chat.pages :as chat-pages]
             [clean-chat.stage06-sql.chat-api :as chat-api]
-            [clean-chat.stage06-sql.client-manager :as client-api]
-            [clean-chat.stage06-sql.client-ws]
+            [clean-chat.stage06-sql.client-api :as client-api]
             [hiccup.page :refer [html5]]))
 
 (defn notify-update-chat-prompt [client room-name]
