@@ -2,6 +2,7 @@
   (:require [clean-chat.stage06-sql.chat-api :as chat-api]
             [clean-chat.stage06-sql.planex-api :as planex-api]
             [clean-chat.stage06-sql.queries-datascript :as queries]
+            [clojure.pprint :as pp]
             [clojure.tools.logging :as log]
             [datascript.core :as d]
             [integrant.core :as ig]
@@ -54,7 +55,14 @@
     (update
      this :outbox commute
      (fn [events] (vec (remove (fn [{:keys [uuid]}] (= uuid to-be-removed)) events))))
-    (update-outbox this identity)))
+    (update-outbox this identity))
+  planex-api/IReducer
+  (plan-and-execute! [this command]
+    (dosync
+     (let [planned-events (planex-api/generate-plan this command)]
+       (log/debugf
+        "\nPLAN:\n%s" (with-out-str (pp/pprint planned-events)))
+       (planex-api/execute-events! this planned-events)))))
 
 (defmethod ig/init-key ::ref-chat [_ initial-value]
   (log/debug "Creating ref-chat")

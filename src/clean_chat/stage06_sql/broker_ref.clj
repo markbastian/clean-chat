@@ -6,15 +6,6 @@
             [clojure.pprint :as pp]
             [clojure.tools.logging :as log]))
 
-(defn plan-and-execute! [{:keys [conn]} command]
-  ;; Needs to be in a protocol or mm as the transaction here may be different
-  ;; per implementation.
-  (dosync
-   (let [planned-events (planex-api/generate-plan conn command)]
-     (log/debugf
-      "\nPLAN:\n%s" (with-out-str (pp/pprint planned-events)))
-     (planex-api/execute-events! conn planned-events))))
-
 (defn handle-events [{:keys [clients conn]}]
   (dosync
    (let [cbt    (client-api/clients-by-transform clients)
@@ -30,6 +21,6 @@
         "\nDELETING:\n%s" (with-out-str (pp/pprint event)))
        (planex-api/outbox-delete! conn event)))))
 
-(defn process-command [context command]
-  (plan-and-execute! context command)
+(defn process-command [{:keys [conn] :as context} command]
+  (planex-api/plan-and-execute! conn command)
   (handle-events context))

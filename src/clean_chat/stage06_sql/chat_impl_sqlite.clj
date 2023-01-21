@@ -5,7 +5,8 @@
             [clean-chat.stage06-sql.sql-migrations :as sql-migrations]
             [clojure.tools.logging :as log]
             [integrant.core :as ig]
-            [parts.next.jdbc.core :as jdbc]))
+            [next.jdbc :as jdbc]
+            [parts.next.jdbc.core :as parts.jdbc]))
 
 (defrecord SqlChat [db])
 
@@ -52,24 +53,31 @@
   (outbox-get [{:keys [db]} event]
     (sql-queries/get-outbox-event db event))
   (outbox-delete! [{:keys [db]} event]
-    (sql-queries/delete-outbox-event! db event)))
+    (sql-queries/delete-outbox-event! db event))
+  planex-api/IReducer
+  (plan-and-execute! [this command]
+    (jdbc/with-transaction [tx (:db this)]
+      (let [txconn         ((assoc this :db tx))
+            planned-events (planex-api/generate-plan txconn command)]
+        (doseq [event planned-events]
+          (planex-api/execute-plan! txconn event))))))
 
 (defmethod ig/init-key ::sql-chat [_ m]
   (log/debug "Creating SQL Chat")
   (map->SqlChat m))
 
 (def config
-  {::jdbc/datasource {:dbtype       "sqlite"
-                      :dbname       "chat-state"
-                      :foreign_keys "on"}
-   ::jdbc/migrations {:db         (ig/ref ::jdbc/datasource)
-                      :migrations [sql-migrations/create-room-table-sql
-                                   sql-migrations/create-user-table-sql
-                                   sql-migrations/create-message-table-sql
-                                   sql-migrations/create-outbox-table-sql]}
-   ::jdbc/teardown   {:db       (ig/ref ::jdbc/datasource)
-                      :commands [sql-migrations/drop-outbox-table-sql
-                                 sql-migrations/drop-message-table-sql
-                                 sql-migrations/drop-user-table-sql
-                                 sql-migrations/drop-room-table-sql]}
-   ::sql-chat        {:db (ig/ref ::jdbc/datasource)}})
+  {::parts.jdbc/datasource {:dbtype       "sqlite"
+                            :dbname       "chat-state"
+                            :foreign_keys "on"}
+   ::parts.jdbc/migrations {:db         (ig/ref ::parts.jdbc/datasource)
+                            :migrations [sql-migrations/create-room-table-sql
+                                         sql-migrations/create-user-table-sql
+                                         sql-migrations/create-message-table-sql
+                                         sql-migrations/create-outbox-table-sql]}
+   ::parts.jdbc/teardown   {:db       (ig/ref ::parts.jdbc/datasource)
+                            :commands [sql-migrations/drop-outbox-table-sql
+                                       sql-migrations/drop-message-table-sql
+                                       sql-migrations/drop-user-table-sql
+                                       sql-migrations/drop-room-table-sql]}
+   ::sql-chat              {:db (ig/ref ::parts.jdbc/datasource)}})

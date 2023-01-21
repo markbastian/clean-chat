@@ -34,3 +34,6 @@
     (log/debugf "\nOUTBOXING:\n%s" (with-out-str (pp/pprint event)))
     (outbox-write! ctx event)
     (log/debug "OUTBOXED")))
+
+(defprotocol IReducer
+  (plan-and-execute! [_ command]))

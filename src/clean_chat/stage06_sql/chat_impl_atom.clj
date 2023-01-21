@@ -55,7 +55,13 @@
   (outbox-delete! [this {to-be-removed :uuid}]
     (update-outbox
      this
-     #(vec (remove (fn [{:keys [uuid]}] (= to-be-removed uuid)) %)))))
+     #(vec (remove (fn [{:keys [uuid]}] (= to-be-removed uuid)) %))))
+  planex-api/IReducer
+  (plan-and-execute! [this command]
+    (let [planned-events (planex-api/generate-plan this command)]
+      (log/debugf
+       "\nPLAN:\n%s" (with-out-str (pp/pprint planned-events)))
+      (planex-api/execute-events! this planned-events))))
 
 (defmethod ig/init-key ::atom-chat [_ initial-value]
   (log/debug "Creating atom-chat")
