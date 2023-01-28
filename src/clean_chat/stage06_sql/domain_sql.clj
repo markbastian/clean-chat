@@ -1,4 +1,4 @@
-(ns clean-chat.stage06-sql.queries-sql
+(ns clean-chat.stage06-sql.domain-sql
   (:require [clojure.edn :as edn]
             [clojure.set :refer [rename-keys]]
             [honey.sql :as hsql]

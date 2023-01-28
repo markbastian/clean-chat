@@ -1,8 +1,7 @@
 (ns clean-chat.stage06-sql.rcb
   #_:clj-kondo/ignore
   (:require [clean-chat.stage06-sql.chat-impl-sqlite]
-            [clean-chat.stage06-sql.planex-api :as planex-api]
-            [clean-chat.stage06-sql.queries-sql :as sql-queries]
+            [clean-chat.stage06-sql.domain-sql :as domain-sql]
             [clean-chat.system :as system]
             [next.jdbc :as jdbc]
             [next.jdbc.sql :as sql]))
@@ -37,49 +36,49 @@
                   :message   "Hi!"}))
 
   (let [chat (:clean-chat.stage06-sql.system/sql-chat (system/system))]
-    (planex-api/execute-plan! chat {:event :join-chat :username "A"}))
+    (reducer-api/execute-plan! chat {:event :join-chat :username "A"}))
 
   (let [ds (:parts.next.jdbc.core/datasource (system/system))]
-    [(sql-queries/upsert-room! ds {:name "public"})
-     (sql-queries/upsert-room! ds {:name "FOO"})
-     (sql-queries/insert-room! ds {:name (str (gensym "FOO"))})
-     (sql-queries/upsert-room! ds {:name "private"})
-     (sql-queries/get-room ds {:name "private"})
-     (sql-queries/upsert-user! ds {:name "Sam"})
-     (sql-queries/get-user ds {:name "Sam"})
-     (sql-queries/upsert-user! ds {:name "Mark"})
-     (sql-queries/insert-user! ds {:name (str (gensym "Bob"))})
-     (sql-queries/insert-user! ds {:name      (str (gensym "Bob"))
-                                   :room-name "FOO"})
-     (sql-queries/update-user! ds {:name      "Mark"
-                                   :room-name "private"})
-     (sql-queries/update-user! ds {:name      "Mark"
-                                   :room-name nil})
-     (sql-queries/update-user! ds {:name      "Mark"
-                                   :room-name "public"})
-     (sql-queries/upsert-user! ds {:name      "Sam"
-                                   :room-name "FOO"})
-     (sql-queries/upsert-user! ds {:name "Bob" :room_name "FOO"})
-     (sql-queries/upsert-user! ds {:username "Bob" :room-name "FOO"})
-     (sql-queries/upsert-user! ds {:username "Mark" :room-name "public"})
-     (sql-queries/upsert-user! ds {:username "Sam" :room-name "public"})
-     (sql-queries/upsert-user! ds {:username "Joe" :room-name nil})
-     (sql-queries/insert-room! ds {:name (str (gensym "ROOM"))})
-     (sql-queries/insert-message! ds {:username "Mark" :room-name "FOO" :message "Hi!!"})
-     (sql-queries/insert-message! ds {:username "Bob" :room-name "FOO" :message "Hi!!"})
-     (sql-queries/get-messages ds)
-     (sql-queries/occupied-rooms ds)
-     (sql-queries/all-active-users ds)
-     (sql-queries/users-in-room ds "public")
-     (sql-queries/current-room-name ds "Sam")
-     (sql-queries/get-room ds {:name "public"})
-     (sql-queries/insert-message! ds {:username "Mark" :room-name "public" :message "Hi!!"})
-     (sql-queries/get-messages-for-room ds "public")
-     (sql-queries/insert-outbox-event! ds {:event :join-room :username "Mark"})
-     (sql-queries/get-outbox-events ds)])
+    [(domain-sql/upsert-room! ds {:name "public"})
+     (domain-sql/upsert-room! ds {:name "FOO"})
+     (domain-sql/insert-room! ds {:name (str (gensym "FOO"))})
+     (domain-sql/upsert-room! ds {:name "private"})
+     (domain-sql/get-room ds {:name "private"})
+     (domain-sql/upsert-user! ds {:name "Sam"})
+     (domain-sql/get-user ds {:name "Sam"})
+     (domain-sql/upsert-user! ds {:name "Mark"})
+     (domain-sql/insert-user! ds {:name (str (gensym "Bob"))})
+     (domain-sql/insert-user! ds {:name       (str (gensym "Bob"))
+                                  :room-name "FOO"})
+     (domain-sql/update-user! ds {:name       "Mark"
+                                  :room-name "private"})
+     (domain-sql/update-user! ds {:name       "Mark"
+                                  :room-name nil})
+     (domain-sql/update-user! ds {:name       "Mark"
+                                  :room-name "public"})
+     (domain-sql/upsert-user! ds {:name       "Sam"
+                                  :room-name "FOO"})
+     (domain-sql/upsert-user! ds {:name "Bob" :room_name "FOO"})
+     (domain-sql/upsert-user! ds {:username "Bob" :room-name "FOO"})
+     (domain-sql/upsert-user! ds {:username "Mark" :room-name "public"})
+     (domain-sql/upsert-user! ds {:username "Sam" :room-name "public"})
+     (domain-sql/upsert-user! ds {:username "Joe" :room-name nil})
+     (domain-sql/insert-room! ds {:name (str (gensym "ROOM"))})
+     (domain-sql/insert-message! ds {:username "Mark" :room-name "FOO" :message "Hi!!"})
+     (domain-sql/insert-message! ds {:username "Bob" :room-name "FOO" :message "Hi!!"})
+     (domain-sql/get-messages ds)
+     (domain-sql/occupied-rooms ds)
+     (domain-sql/all-active-users ds)
+     (domain-sql/users-in-room ds "public")
+     (domain-sql/current-room-name ds "Sam")
+     (domain-sql/get-room ds {:name "public"})
+     (domain-sql/insert-message! ds {:username "Mark" :room-name "public" :message "Hi!!"})
+     (domain-sql/get-messages-for-room ds "public")
+     (domain-sql/insert-outbox-event! ds {:event :join-room :username "Mark"})
+     (domain-sql/get-outbox-events ds)])
 
   (let [ds (:clean-chat.stage06-sql.system/sql-chat (system/system))]
-    (planex-api/outbox-read ds))
+    (reducer-api/outbox-read ds))
 
   ;; Create users, rooms, messages, and outbox tables
   ;; https://github.com/seancorfield/honeysql/blob/develop/doc/clause-reference.md

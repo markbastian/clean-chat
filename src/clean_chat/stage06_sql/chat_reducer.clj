@@ -1,9 +1,10 @@
-(ns clean-chat.stage06-sql.planex-chat
-  (:require [clean-chat.stage06-sql.chat-api :as chat-api]
-            [clean-chat.stage06-sql.planex-api :as planex-api]
-            [clojure.tools.logging :as log]))
+(ns clean-chat.stage06-sql.chat-reducer
+  (:require
+   [clean-chat.stage06-sql.api.reducer :as reducer-api]
+   [clean-chat.stage06-sql.chat-api :as chat-api]
+   [clojure.tools.logging :as log]))
 
-(defmethod planex-api/generate-plan :chat-message
+(defmethod reducer-api/generate-plan :chat-message
   [context {:keys [username chat-message]}]
   (if-some [room-name (chat-api/current-room-name context username)]
     [{:event     :create-message
@@ -14,7 +15,7 @@
       :message   chat-message}]
     (log/debugf "'%s' is not in a room." username)))
 
-(defmethod planex-api/generate-plan :change-room
+(defmethod reducer-api/generate-plan :change-room
   [context {:keys [username room-name]}]
   (when-some [old-room-name (chat-api/current-room-name context username)]
     (when-not (= room-name old-room-name)
@@ -37,7 +38,7 @@
                :room-name room-name
                :username  username})))))
 
-(defmethod planex-api/generate-plan :rename-room
+(defmethod reducer-api/generate-plan :rename-room
   [context {:keys [username room-name]}]
   (when-not (chat-api/room context room-name)
     (let [old-room-name (chat-api/current-room-name context username)
@@ -49,8 +50,9 @@
           :old-room-name old-room-name
           :new-room-name room-name}]))))
 
-(defmethod planex-api/generate-plan :join-chat
+(defmethod reducer-api/generate-plan :join-chat
   [context {:keys [username room-name]}]
+  (println "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
   (when-not (chat-api/current-room-name context username)
     (cond-> [{:event    :join-chat
               :uuid     (random-uuid)
@@ -68,7 +70,7 @@
              :room-name room-name
              :username  username}))))
 
-(defmethod planex-api/generate-plan :leave-chat [context {:keys [username]}]
+(defmethod reducer-api/generate-plan :leave-chat [context {:keys [username]}]
   (when-some [room-name (chat-api/current-room-name context username)]
     [{:event     :leave-room
       :uuid      (random-uuid)
@@ -80,24 +82,24 @@
       :nanos    (System/nanoTime)
       :username username}]))
 
-(defmethod planex-api/execute-plan! :create-message
+(defmethod reducer-api/execute-plan! :create-message
   [state event]
   (chat-api/create-message! state event))
 
-(defmethod planex-api/execute-plan! :join-chat [state event]
+(defmethod reducer-api/execute-plan! :join-chat [state event]
   (chat-api/join-chat! state event))
 
-(defmethod planex-api/execute-plan! :leave-chat [state event]
+(defmethod reducer-api/execute-plan! :leave-chat [state event]
   (chat-api/leave-chat! state event))
 
-(defmethod planex-api/execute-plan! :create-room [state event]
+(defmethod reducer-api/execute-plan! :create-room [state event]
   (chat-api/create-room! state event))
 
-(defmethod planex-api/execute-plan! :enter-room [state event]
+(defmethod reducer-api/execute-plan! :enter-room [state event]
   (chat-api/enter-room! state event))
 
-(defmethod planex-api/execute-plan! :leave-room [state event]
+(defmethod reducer-api/execute-plan! :leave-room [state event]
   (chat-api/leave-room! state event))
 
-(defmethod planex-api/execute-plan! :rename-room [state event]
+(defmethod reducer-api/execute-plan! :rename-room [state event]
   (chat-api/rename-room! state event))

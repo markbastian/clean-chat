@@ -1,14 +1,5 @@
 (ns clean-chat.stage06-sql.queries-datascript
-  (:require
-   [datascript.core :as d]))
-
-(def chat-schema
-  {:username  {:db/unique :db.unique/identity}
-   :room-name {:db/unique :db.unique/identity}
-   :user      {:db/valueType   :db.type/ref
-               :db/cardinality :db.cardinality/one}
-   :room      {:db/valueType   :db.type/ref
-               :db/cardinality :db.cardinality/one}})
+  (:require [datascript.core :as d]))
 
 ;; Queries ;;
 (def all-rooms-query
@@ -62,31 +53,3 @@
           [?u :username ?username]]
         db room-name)
        (sort-by :t)))
-
-;; Functional events ;;
-(defn create-message [db {:keys [uuid username message room-name nanos] :as m}]
-  {:pre [uuid username message room-name nanos]}
-  (d/db-with db [(-> m
-                     (select-keys [:nanos :uuid :message])
-                     (assoc
-                      :user {:username username}
-                      :room {:room-name room-name}))]))
-
-(defn join-chat [db {:keys [username]}]
-  {:pre [username]}
-  (d/db-with db [{:username username}]))
-
-(defn insert-room [db room-name]
-  (d/db-with db [{:room-name room-name}]))
-
-(defn enter-room [db {:keys [username room-name]}]
-  (d/db-with db [{:username username :room {:room-name room-name}}]))
-
-(defn leave-room [db {:keys [username]}]
-  {:pre [username]}
-  (d/db-with db [[:db.fn/retractAttribute [:username username] :room]]))
-
-(defn rename-room [db {:keys [old-room-name new-room-name]}]
-  (let [id      (:db/id (room db old-room-name))
-        tx-data [[:db/add id :room-name new-room-name]]]
-    (d/db-with db tx-data)))
