@@ -52,7 +52,6 @@
 
 (defmethod reducer-api/generate-plan :join-chat
   [context {:keys [username room-name]}]
-  (println "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
   (when-not (chat-api/current-room-name context username)
     (cond-> [{:event    :join-chat
               :uuid     (random-uuid)

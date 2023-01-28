@@ -18,7 +18,6 @@
      db
      (select-keys event [:username :room-name :message])))
   (join-chat! [{:keys [db]} {:keys [username]}]
-    (println username)
     (domain-sql/upsert-user! db {:username username}))
   (leave-chat! [{:keys [db]} {:keys [username]}]
     (domain-sql/upsert-user! db {:username   username
